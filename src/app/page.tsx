@@ -1,18 +1,16 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { signIn } from "next-auth/react";
+import prisma from "@/lib/prisma";
+import { HeroActions, JoinCTA } from "@/components/home/HomeActions";
 import styles from "./Home.module.css";
-import { ArrowRightIcon, CalendarIcon, ClockIcon, UserIcon } from "@/components/icons";
+import { CalendarIcon, ClockIcon, UserIcon } from "@/components/icons";
+import Link from "next/link";
 
 type TimelineItem = {
   id: string;
   title: string;
   description?: string | null;
-  createdAt?: string;
-  startDate?: string | null;
-  schedule?: string | null;
+  createdAt: Date;
+  startDate?: Date | null;
+  schedule?: Date | null;
 };
 
 const getLatestDate = (item: TimelineItem) => {
@@ -33,49 +31,23 @@ const formatTimelineDate = (item: TimelineItem) => {
     : "Date TBD";
 };
 
-export default function Home() {
-  const [events, setEvents] = useState<TimelineItem[]>([]);
-  const [workshops, setWorkshops] = useState<TimelineItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function Home() {
+  // Fetch data on the server
+  const [eventsData, workshopsData] = await Promise.all([
+    prisma.event.findMany({
+      take: 3,
+      orderBy: { startDate: "desc" },
+      select: { id: true, title: true, description: true, createdAt: true, startDate: true }
+    }),
+    prisma.workshop.findMany({
+      take: 3,
+      orderBy: { schedule: "desc" },
+      select: { id: true, title: true, description: true, createdAt: true, startDate: true, schedule: true }
+    })
+  ]);
 
-  useEffect(() => {
-    const fetchLandingData = async () => {
-      try {
-        const [eventsResponse, workshopsResponse] = await Promise.all([
-          fetch("/api/events"),
-          fetch("/api/workshops"),
-        ]);
-
-        if (!eventsResponse.ok || !workshopsResponse.ok) {
-          throw new Error("Failed to fetch landing data");
-        }
-
-        const [eventsData, workshopsData] = await Promise.all([
-          eventsResponse.json(),
-          workshopsResponse.json(),
-        ]);
-
-        setEvents(Array.isArray(eventsData) ? eventsData : []);
-        setWorkshops(Array.isArray(workshopsData) ? workshopsData : []);
-      } catch {
-        setEvents([]);
-        setWorkshops([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLandingData();
-  }, []);
-
-  const latestEvents = useMemo(
-    () => [...events].sort((a, b) => getLatestDate(b) - getLatestDate(a)).slice(0, 3),
-    [events]
-  );
-  const latestWorkshops = useMemo(
-    () => [...workshops].sort((a, b) => getLatestDate(b) - getLatestDate(a)).slice(0, 3),
-    [workshops]
-  );
+  const events = eventsData as any[];
+  const workshops = workshopsData as any[];
 
   return (
     <div className={styles.page}>
@@ -99,17 +71,7 @@ export default function Home() {
             We bridge the gap between academic theory and industry-grade deployment.
           </p>
 
-          <div className={styles.heroActions}>
-            <button
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="btn-primary"
-            >
-              Start Your Journey <ArrowRightIcon className="w-5 h-5 ml-2" />
-            </button>
-            <Link href="/events" className="btn-secondary">
-              View Roadmap
-            </Link>
-          </div>
+          <HeroActions />
         </div>
 
         <div className={styles.heroVisual}>
@@ -198,12 +160,10 @@ export default function Home() {
               <Link href="/events">View all</Link>
             </div>
             <div className={styles.timelineList}>
-              {isLoading ? (
-                <p className={styles.timelineFallback}>Loading events...</p>
-              ) : latestEvents.length === 0 ? (
+              {events.length === 0 ? (
                 <p className={styles.timelineFallback}>No events available yet.</p>
               ) : (
-                latestEvents.map((event) => (
+                events.map((event) => (
                   <article key={event.id} className={styles.timelineItem}>
                     <div className={styles.timelineTitleRow}>
                       <CalendarIcon />
@@ -226,12 +186,10 @@ export default function Home() {
               <Link href="/workshops">View all</Link>
             </div>
             <div className={styles.timelineList}>
-              {isLoading ? (
-                <p className={styles.timelineFallback}>Loading workshops...</p>
-              ) : latestWorkshops.length === 0 ? (
+              {workshops.length === 0 ? (
                 <p className={styles.timelineFallback}>No workshops available yet.</p>
               ) : (
-                latestWorkshops.map((workshop) => (
+                workshops.map((workshop) => (
                   <article key={workshop.id} className={styles.timelineItem}>
                     <div className={styles.timelineTitleRow}>
                       <CalendarIcon />
@@ -263,13 +221,7 @@ export default function Home() {
             mentorship, and a network that matters.
           </p>
           <div className={styles.ctaButtons}>
-            <button
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="btn-primary"
-              style={{ padding: "1.25rem 3.5rem" }}
-            >
-              Join AI Horizon
-            </button>
+            <JoinCTA />
           </div>
         </div>
       </section>

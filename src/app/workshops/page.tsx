@@ -14,7 +14,18 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function WorkshopsPage() {
   const workshops = await prisma.workshop.findMany({
     orderBy: { startDate: "desc" },
-    include: { organizedBy: { select: { name: true } } },
+    select: {
+      id: true,
+      title: true,
+      startDate: true,
+      endDate: true,
+      startTime: true,
+      endTime: true,
+      status: true,
+      eventType: true,
+      schedule: true,
+      speakers: true,
+    }
   });
 
   return (
