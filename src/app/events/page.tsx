@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import styles from "./Events.module.css";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const STATUS_LABEL: Record<string, string> = {
   OPEN_FOR_REGISTRATION: "Open",

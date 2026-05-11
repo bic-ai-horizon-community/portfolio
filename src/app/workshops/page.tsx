@@ -3,7 +3,7 @@ import Link from "next/link";
 import styles from "./Workshops.module.css";
 import { CalendarIcon } from "@/components/icons";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const STATUS_LABEL: Record<string, string> = {
   OPEN_FOR_REGISTRATION: "Open",
