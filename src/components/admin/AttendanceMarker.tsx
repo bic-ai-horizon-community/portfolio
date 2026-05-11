@@ -53,19 +53,26 @@ export const AttendanceMarker = ({ eventId, workshopId, userId, isAttended, disa
     <button 
       onClick={handleToggle} 
       disabled={loading || disabled}
-      className={isAttended ? "btn-secondary" : "btn-primary"}
+      className={isAttended ? "attendance-toggle present" : "attendance-toggle absent"}
       style={{ 
-        padding: "0.4rem 0.8rem", 
-        fontSize: "0.75rem",
-        borderColor: isAttended ? "var(--success)" : undefined,
-        color: isAttended ? "var(--success)" : undefined,
         opacity: (loading || disabled) ? 0.7 : 1
       }}
-      title={isAttended ? "Click to Un-mark" : "Click to Mark Present"}
+      title={isAttended ? "Click to Mark Absent" : "Click to Mark Present"}
     >
-      {loading ? "..." : isAttended ? (
-        <><CheckIcon className="w-3 h-3 inline-block mr-1" /> Present</>
-      ) : "Mark Present"}
+      <div className="attendance-box">
+        {loading ? (
+          <span className="loading-dots">...</span>
+        ) : (
+          <>
+            <div className="attendance-icon">
+              {isAttended && <CheckIcon className="w-4 h-4" />}
+            </div>
+            <span className="attendance-label">
+              {isAttended ? "Present" : "Absent"}
+            </span>
+          </>
+        )}
+      </div>
     </button>
   );
 };

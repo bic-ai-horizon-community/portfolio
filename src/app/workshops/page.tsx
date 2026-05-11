@@ -13,7 +13,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default async function WorkshopsPage() {
   const workshops = await prisma.workshop.findMany({
-    orderBy: { schedule: "asc" },
+    orderBy: { createdAt: "desc" },
     include: { organizedBy: { select: { name: true } } },
   });
 
@@ -49,14 +49,27 @@ export default async function WorkshopsPage() {
                 </span>
               </div>
               <h2 className={styles.cardTitle}>{workshop.title}</h2>
-              <p className={styles.schedule}>
+              <div className={styles.schedule}>
                 <CalendarIcon className="w-4 h-4" />
-                {new Date(workshop.schedule).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
-                {" · "}
-                {new Date(workshop.schedule).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              </p>
-              <p className={styles.organizer}>Led by {workshop.organizedBy.name}</p>
-              <p className={styles.description}>{workshop.description.substring(0, 140)}…</p>
+                {workshop.eventType === "ONE_DAY" ? (
+                  <span>
+                    {new Date(workshop.startDate || workshop.schedule!).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                ) : (
+                  <span>
+                    {new Date(workshop.startDate!).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    {" - "}
+                    {new Date(workshop.endDate!).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                )}
+                {workshop.startTime && (
+                  <>
+                    {" · "}
+                    {workshop.startTime} - {workshop.endTime}
+                  </>
+                )}
+              </div>
+              <p className={styles.description}>{workshop.description.substring(0, 120)}…</p>
               <Link href={`/workshops/${workshop.id}`} className={styles.viewBtn}>
                 Learn More
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

@@ -31,13 +31,15 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--text-muted);
-  font-size: 0.9375rem;
-  flex-wrap: wrap;
+  color: var(--text-sub);
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
-.heroMeta strong { color: var(--text-sub); }
-.metaDivider { color: var(--text-faint); }
+.metaDivider {
+  color: var(--border);
+  margin: 0 0.5rem;
+}
 
 .content {
   display: grid;
@@ -106,6 +108,39 @@
 
 .linkLabel { font-weight: 700; font-size: 0.9375rem; color: var(--text-main); }
 .linkUrl   { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.125rem; }
+
+.scheduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.scheduleCard {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  transition: all var(--t-base);
+}
+
+.scheduleCard:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.scheduleDate {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.scheduleTime {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+}
 
 .mediaGrid {
   display: grid;

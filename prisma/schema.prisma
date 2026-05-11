@@ -65,6 +65,9 @@ model Event {
   eventType     EventType   @default(ONE_DAY)
   startDate     DateTime?
   endDate       DateTime?
+  startTime     String?     // e.g. "09:00"
+  endTime       String?     // e.g. "17:00"
+  dailySchedules Json?      // Array of { date: string, startTime: string, endTime: string }
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
@@ -82,7 +85,13 @@ model Workshop {
   organizedBy   User        @relation(fields: [organizedById], references: [id])
   organizedById String
   speakers      String?     // Text or JSON for mentors
-  schedule      DateTime
+  schedule      DateTime?   // For backward compatibility / single day
+  startDate     DateTime?
+  endDate       DateTime?
+  startTime     String?     // e.g. "09:00"
+  endTime       String?     // e.g. "17:00"
+  dailySchedules Json?      // Array of { date: string, startTime: string, endTime: string }
+  eventType     EventType   @default(ONE_DAY)
   materials     Json?       // Links/notes
   status        EventStatus @default(OPEN_FOR_REGISTRATION)
   createdAt     DateTime    @default(now())

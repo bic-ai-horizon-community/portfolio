@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { RegisterButton } from "@/components/events/RegisterButton";
-import { ExternalLinkIcon, UserIcon } from "@/components/icons";
+import { ExternalLinkIcon, UserIcon, CalendarIcon, ClockIcon } from "@/components/icons";
 import styles from "./EventDetail.module.css";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -32,6 +32,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   }
 
   const externalLinks = (event.externalLinks as any[]) || [];
+  const dailySchedules = (event.dailySchedules as any[]) || [];
 
   return (
     <div className={styles.container}>
@@ -46,11 +47,52 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             event.status === "ONGOING" ? "badge-ongoing" : "badge-completed"
           }`}>{STATUS_LABEL[event.status]}</span>
           <h1 className={styles.heroTitle}>{event.title}</h1>
+          <div className={styles.heroMeta}>
+            <CalendarIcon className="w-5 h-5" />
+            {event.eventType === "ONE_DAY" ? (
+              <span>
+                {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                <span className={styles.metaDivider}>|</span>
+                <ClockIcon className="w-4 h-4 inline-block mr-1" />
+                {event.startTime} - {event.endTime}
+              </span>
+            ) : (
+              <span>
+                {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {event.endDate && new Date(event.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                {event.startTime && event.endTime && (
+                  <>
+                    <span className={styles.metaDivider}>|</span>
+                    <ClockIcon className="w-4 h-4 inline-block mr-1" />
+                    {event.startTime} - {event.endTime}
+                  </>
+                )}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
       <div className={styles.content}>
         <div className={styles.main}>
+          {event.eventType === "MULTIPLE_DAY" && dailySchedules.length > 0 && (
+            <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Full Event Schedule</h2>
+              <div className={styles.scheduleGrid}>
+                {dailySchedules.map((day, idx) => (
+                  <div key={idx} className={`${styles.scheduleCard} glass-card`}>
+                    <div className={styles.scheduleDate}>
+                      {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                    </div>
+                    <div className={styles.scheduleTime}>
+                      <ClockIcon className="w-3 h-3 inline-block mr-1" />
+                      {day.startTime} - {day.endTime}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>About this Event</h2>
             <p className={styles.description}>{event.description}</p>

@@ -11,6 +11,9 @@ const eventUpdateSchema = z.object({
   eventType: z.enum(["ONE_DAY", "MULTIPLE_DAY"]).optional(),
   startDate: z.string().or(z.date()).optional().transform(val => val ? new Date(val) : undefined),
   endDate: z.string().or(z.date()).optional().transform(val => val ? new Date(val) : undefined),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  dailySchedules: z.any().optional(),
   externalLinks: z.array(z.object({
     label: z.string(),
     url: z.string().url(),
