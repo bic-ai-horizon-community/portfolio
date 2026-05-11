@@ -1,257 +1,415 @@
 .page {
   position: relative;
-  min-height: calc(100vh - 68px);
+  overflow: visible;
+  padding-bottom: 10rem;
 }
 
-/* ─── Hero ─────────────────────────────────────────────────── */
+/* ─── Hero Section ───────────────────────────────────────────── */
 .hero {
-  position: relative;
-  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 4rem;
+  align-items: center;
+  padding: 8rem 0 6rem;
+  min-height: 80vh;
+}
+
+.heroContent {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 8rem 0 6rem;
+  gap: 2rem;
 }
 
-.hero::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60vw;
-  height: 60vw;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-  z-index: -1;
-  pointer-events: none;
-}
-
-.heroTop {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2.5rem;
-  width: 100%;
-}
-
-.collegeLogos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  background: var(--bg-card);
-  padding: 0.85rem 1.75rem;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  animation: fadeInUp var(--t-slow) both;
-}
-
-.mainLogo {
-  height: 72px;
-  width: auto;
-  object-fit: contain;
-}
-
-.collegeLogo {
-  height: 64px;
-  width: auto;
-  object-fit: contain;
-}
-
-.logoDivider {
-  width: 1px;
-  height: 32px;
-  background: var(--border);
+.badgeWrapper {
+  animation: fadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.625rem;
-  background: rgba(59, 130, 246, 0.1);
+  gap: 0.75rem;
+  background: rgba(59, 130, 246, 0.08);
   color: var(--primary-light);
   padding: 0.6rem 1.5rem;
   border-radius: var(--radius-full);
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   border: 1px solid rgba(59, 130, 246, 0.2);
-  margin-bottom: 2.5rem;
-  animation: fadeInUp var(--t-slow) both;
+  backdrop-filter: blur(12px);
 }
 
 .badgeDot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--primary);
-  box-shadow: 0 0 10px var(--primary-glow);
+  box-shadow: 0 0 15px var(--primary-glow);
   animation: pulseGlow 2s ease-in-out infinite;
-  flex-shrink: 0;
 }
 
-.title {
-  font-size: clamp(3rem, 8vw, 6.5rem);
-  font-weight: 900;
-  line-height: 0.95;
+.heroTitle {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 950;
+  line-height: 1;
   letter-spacing: -0.05em;
-  max-width: 1000px;
-  margin-bottom: 2rem;
   color: var(--text-main);
-  animation: fadeInUp var(--t-slow) both;
+  animation: fadeInUp 1s cubic-bezier(0.23, 1, 0.32, 1) 0.1s both;
 }
 
-.highlight {
-  background: linear-gradient(135deg, var(--primary) 0%, #818cf8 50%, var(--primary-light) 100%);
+.gradientText {
+  background: linear-gradient(135deg, #fff 0%, var(--primary-light) 50%, var(--primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.3));
 }
 
-.subtitle {
-  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+.heroDescription {
+  font-size: 1.25rem;
   color: var(--text-sub);
-  max-width: 700px;
-  margin-bottom: 4rem;
+  max-width: 550px;
   line-height: 1.6;
-  animation: fadeInUp var(--t-slow) both;
+  font-weight: 500;
+  animation: fadeInUp 1s cubic-bezier(0.23, 1, 0.32, 1) 0.2s both;
 }
 
-.actions {
+.heroActions {
   display: flex;
   gap: 1.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 5rem;
-  animation: fadeInUp var(--t-slow) both;
+  animation: fadeInUp 1s cubic-bezier(0.23, 1, 0.32, 1) 0.3s both;
 }
 
-/* ─── Stats ─────────────────────────────────────────────────── */
-.stats {
-  display: flex;
-  align-items: center;
-  gap: 4rem;
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.5rem 4rem;
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-sm);
-  animation: fadeInUp var(--t-slow) both;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.statNum {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--primary-light);
-}
-
-.statLabel {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.statDivider {
-  width: 1px;
-  height: 40px;
-  background: var(--border);
-}
-
-/* ─── Feature Cards ─────────────────────────────────────────── */
-.features {
+/* Hero Visual */
+.heroVisual {
   position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  padding-bottom: 8rem;
+  animation: fadeInUp 1.2s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 
-.feature {
-  padding: 3rem 2.5rem;
+.visualCard {
+  background: #0d1117;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  transform: perspective(1000px) rotateY(-15deg) rotateX(10deg);
+  transition: transform 0.5s ease;
+}
+
+.visualCard:hover {
+  transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+}
+
+.cardHeader {
+  background: #161b22;
+  padding: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.dotRed { width: 12px; height: 12px; border-radius: 50%; background: #ff5f56; }
+.dotYellow { width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e; }
+.dotGreen { width: 12px; height: 12px; border-radius: 50%; background: #27c93f; }
+
+.cardBody {
+  padding: 2rem;
   display: flex;
   flex-direction: column;
+  gap: 0.75rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+}
+
+.codeLine {
+  display: flex;
   gap: 1rem;
-  background: var(--bg-card);
+  color: #8b949e;
+}
+
+.codeLine span:first-child { color: var(--primary); font-weight: bold; }
+.codeBlue { color: #58a6ff; font-weight: bold; }
+.codePurple { color: #bc8cff; font-weight: bold; }
+.codeGreen { color: #3fb950; font-weight: bold; }
+
+.floatingLogo {
+  position: absolute;
+  bottom: -40px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--t-base);
-  animation: fadeInUp var(--t-slow) both;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  animation: float 6s ease-in-out infinite;
 }
 
-.feature:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-hover);
+.floatingLogo img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
-.featureIcon {
+/* ─── Bento Grid Section ────────────────────────────────────── */
+.bentoSection {
+  padding: 8rem 0;
+}
+
+.bentoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 200px);
+  gap: 1.5rem;
+  grid-template-areas: 
+    "main main stat1 stat2"
+    "main main feat small"
+    "logo logo feat small";
+}
+
+.bentoItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+}
+
+.bentoItem:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-focus);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+.mainBento { grid-area: main; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; }
+.statBento { grid-area: auto; align-items: center; justify-content: center; text-align: center; }
+.featureBento { grid-area: feat; }
+.smallBento { grid-area: small; }
+.logoBento { grid-area: logo; flex-direction: row; align-items: center; justify-content: center; }
+
+/* Bento Content Details */
+.bentoIcon {
   width: 56px;
   height: 56px;
-  border-radius: var(--radius-md);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(59, 130, 246, 0.1);
-  color: var(--icon-color, var(--primary));
-  margin-bottom: 0.5rem;
-  flex-shrink: 0;
-  transition: all var(--t-base);
+  margin-bottom: 1.5rem;
 }
 
-.feature:hover .featureIcon {
-  transform: scale(1.1) rotate(5deg);
-  background: var(--icon-color);
-  color: #fff;
-  box-shadow: 0 0 20px var(--icon-color);
-}
-
-.feature h3 {
+.bentoItem h3 {
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--text-main);
+  margin-bottom: 1rem;
   letter-spacing: -0.03em;
 }
 
-.feature p {
-  font-size: 1rem;
+.bentoItem p {
   color: var(--text-sub);
-  line-height: 1.7;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.statValue {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--text-main);
+  line-height: 1;
+  background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+/* Bento Graphics */
+.bentoGraphic {
+  position: relative;
+  height: 100%;
+}
+
+.abstractShapes {
+  position: absolute;
+  inset: 0;
+}
+
+.shape1 {
+  position: absolute;
+  top: 10%;
+  right: 10%;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  filter: blur(40px);
+  opacity: 0.3;
+}
+
+.shape2 {
+  position: absolute;
+  bottom: 10%;
+  left: 10%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+  filter: blur(30px);
+  opacity: 0.2;
+}
+
+.logoGroup {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.bentoCollegeLogo {
+  height: 50px;
+  width: auto;
+}
+
+.logoDivider {
+  width: 1px;
+  height: 30px;
+  background: var(--border);
+}
+
+.partnerText {
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+}
+
+/* ─── Final CTA ──────────────────────────────────────────────── */
+.finalCta {
+  position: relative;
+  padding: 10rem 0;
+  text-align: center;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  margin-top: 4rem;
+}
+
+.ctaBackground {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.orb1 {
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+  filter: blur(80px);
+}
+
+.orb2 {
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  filter: blur(80px);
+}
+
+.ctaContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 950;
+  line-height: 1;
+  color: var(--text-main);
+  margin-bottom: 2rem;
+  letter-spacing: -0.05em;
+}
+
+.ctaTitle span {
+  color: var(--primary-light);
+}
+
+.ctaText {
+  font-size: 1.25rem;
+  color: var(--text-sub);
+  margin-bottom: 3.5rem;
+  line-height: 1.6;
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .features { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 1200px) {
+  .hero { gap: 2rem; }
+  .bentoGrid { grid-template-rows: repeat(3, 180px); gap: 1rem; }
 }
 
-@media (max-width: 900px) {
-  .hero { padding: 6rem 0 4rem; }
-  .features {
+@media (max-width: 1024px) {
+  .hero {
     grid-template-columns: 1fr;
-    max-width: 500px;
-    margin: 0 auto;
+    text-align: center;
+    padding-top: 4rem;
+    min-height: auto;
+    gap: 5rem;
   }
+  
+  .heroDescription { margin: 0 auto; }
+  .heroActions { justify-content: center; }
+  
+  .visualCard { transform: none; max-width: 600px; margin: 0 auto; }
+  .visualCard:hover { transform: translateY(-10px); }
+  
+  .bentoGrid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: 
+      "main main"
+      "stat1 stat2"
+      "feat feat"
+      "small small"
+      "logo logo";
+  }
+
+  .mainBento { grid-area: main; grid-template-columns: 1fr; }
+  .statBento:nth-child(2) { grid-area: stat1; }
+  .statBento:nth-child(3) { grid-area: stat2; }
+}
+
+@media (max-width: 768px) {
+  .heroTitle { font-size: 3.5rem; }
+  .bentoItem { padding: 2rem; }
+  .statValue { font-size: 3rem; }
 }
 
 @media (max-width: 640px) {
-  .hero { padding: 4rem 0 3rem; }
-  .collegeLogos { flex-direction: column; gap: 1rem; padding: 1.5rem; }
-  .logoDivider { width: 40px; height: 1px; }
-  .stats { gap: 1.5rem; padding: 1.5rem; flex-direction: column; }
-  .statDivider { display: none; }
-  .actions { flex-direction: column; width: 100%; max-width: 340px; }
-  .title { font-size: 3.5rem; }
+  .heroActions { flex-direction: column; width: 100%; }
+  .heroActions > * { width: 100%; }
+  
+  .heroTitle { font-size: 3rem; }
+  .floatingLogo { width: 80px; height: 80px; bottom: -20px; right: -10px; padding: 1rem; }
+  
+  .bentoGrid { grid-template-columns: 1fr; }
+  .bentoGrid { grid-template-areas: none; }
+  .bentoItem { grid-area: auto !important; }
+  
+  .finalCta { padding: 6rem 1.5rem; }
 }

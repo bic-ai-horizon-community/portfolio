@@ -3,98 +3,143 @@
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import styles from "./Home.module.css";
-import { ArrowRightIcon } from "@/components/icons";
+import { ArrowRightIcon, CalendarIcon, ClockIcon, UserIcon } from "@/components/icons";
 
 export default function Home() {
   return (
     <div className={styles.page}>
-      {/* Hero */}
+      {/* ─── Hero Section ─── */}
       <section className={styles.hero}>
-        <div className={styles.heroTop}>
-          <div className={styles.collegeLogos} style={{ animationDelay: "0ms" }}>
-            <img src="/ai-horizon-logo.png" alt="AI Horizon" className={styles.mainLogo} />
-            <div className={styles.logoDivider}></div>
-            <img src="/college-logo.svg" alt="Biratnagar International College" className={styles.collegeLogo} />
+        <div className={styles.heroContent}>
+          <div className={styles.badgeWrapper}>
+            <div className={styles.badge}>
+              <span className={styles.badgeDot} />
+              <span>BIC AI Community</span>
+            </div>
+          </div>
+          
+          <h1 className={styles.heroTitle}>
+            Architecting the <br />
+            <span className={styles.gradientText}>Intelligence Frontier</span>
+          </h1>
+          
+          <p className={styles.heroDescription}>
+            The definitive ecosystem for AI innovation at Biratnagar International College. 
+            We bridge the gap between academic theory and industry-grade deployment.
+          </p>
+
+          <div className={styles.heroActions}>
+            <button
+              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+              className="btn-primary"
+            >
+              Start Your Journey <ArrowRightIcon className="w-5 h-5 ml-2" />
+            </button>
+            <Link href="/events" className="btn-secondary">
+              View Roadmap
+            </Link>
           </div>
         </div>
 
-        <div className={styles.badge} style={{ animationDelay: "100ms" }}>
-          <span className={styles.badgeDot} />
-          Official Student Community
-        </div>
-
-        <h1 className={styles.title} style={{ animationDelay: "200ms" }}>
-          Where Students Master{" "}
-          <span className={styles.highlight}>Artificial Intelligence</span>
-        </h1>
-
-        <p className={styles.subtitle} style={{ animationDelay: "300ms" }}>
-          The premier AI community at Biratnagar International College. Learn, build, and innovate 
-          with hands-on workshops, hackathons, and a network of future engineers.
-        </p>
-
-        <div className={styles.actions} style={{ animationDelay: "400ms" }}>
-          <Link href="/events" className="btn-primary" style={{ padding: "0.9rem 2rem", fontSize: "1rem" }}>
-            Explore Events <ArrowRightIcon className="w-4 h-4 ml-1" />
-          </Link>
-          <button
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="btn-secondary"
-            style={{ padding: "0.9rem 2rem", fontSize: "1rem" }}
-          >
-            Join the Community
-          </button>
-        </div>
-
-        {/* Stats */}
-        <div className={styles.stats} style={{ animationDelay: "500ms" }}>
-          <div className={styles.stat}>
-            <span className={styles.statNum}>Events</span>
-            <span className={styles.statLabel}>Hackathons & Talks</span>
+        <div className={styles.heroVisual}>
+          <div className={styles.visualCard}>
+            <div className={styles.cardHeader}>
+              <div className={styles.dotRed} />
+              <div className={styles.dotYellow} />
+              <div className={styles.dotGreen} />
+            </div>
+            <div className={styles.cardBody}>
+              <code className={styles.codeLine}><span>$</span> ai init community</code>
+              <code className={styles.codeLine}><span className={styles.codeBlue}>SUCCESS</span> Found 250+ engineers...</code>
+              <code className={styles.codeLine}><span className={styles.codePurple}>FETCH</span> Latest workshops...</code>
+              <code className={styles.codeLine}><span className={styles.codeGreen}>READY</span> Shaping the future.</code>
+            </div>
           </div>
-          <div className={styles.statDivider} />
-          <div className={styles.stat}>
-            <span className={styles.statNum}>Workshops</span>
-            <span className={styles.statLabel}>Hands-on Learning</span>
-          </div>
-          <div className={styles.statDivider} />
-          <div className={styles.stat}>
-            <span className={styles.statNum}>Community</span>
-            <span className={styles.statLabel}>BIC Students</span>
+          <div className={styles.floatingLogo}>
+            <img src="/ai-horizon-logo.png" alt="AI Horizon" />
           </div>
         </div>
       </section>
 
-      {/* Feature cards */}
-      <section className={styles.features}>
-        <div className={`${styles.feature} glass-card`} style={{ animationDelay: "600ms" }}>
-          <div className={styles.featureIcon} style={{ "--icon-color": "#3b82f6" } as any}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-            </svg>
+      {/* ─── Bento Grid Section ─── */}
+      <section className={styles.bentoSection}>
+        <div className={styles.bentoGrid}>
+          {/* Main Feature */}
+          <div className={`${styles.bentoItem} ${styles.mainBento} glass-card`}>
+            <div className={styles.bentoContent}>
+              <div className={styles.bentoIcon} style={{ background: "rgba(59, 130, 246, 0.1)", color: "var(--primary)" }}>
+                <CalendarIcon />
+              </div>
+              <h3>Hands-on Workshops</h3>
+              <p>Move beyond the basics. Build production-ready RAG pipelines, fine-tune LLMs, and deploy computer vision models.</p>
+            </div>
+            <div className={styles.bentoGraphic}>
+              <div className={styles.abstractShapes}>
+                <div className={styles.shape1} />
+                <div className={styles.shape2} />
+              </div>
+            </div>
           </div>
-          <h3>Workshops</h3>
-          <p>Practical, hands-on sessions covering everything from ML fundamentals to production-grade LLMs — led by industry practitioners.</p>
-        </div>
 
-        <div className={`${styles.feature} glass-card`} style={{ animationDelay: "700ms" }}>
-          <div className={styles.featureIcon} style={{ "--icon-color": "#8b5cf6" } as any}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
+          {/* Stat Card 1 */}
+          <div className={`${styles.bentoItem} ${styles.statBento} glass-card`}>
+            <span className={styles.statValue}>250+</span>
+            <span className={styles.statLabel}>Active Members</span>
           </div>
-          <h3>Events</h3>
-          <p>Hackathons, guest lectures, and networking sessions with researchers and engineers building the future of AI.</p>
-        </div>
 
-        <div className={`${styles.feature} glass-card`} style={{ animationDelay: "800ms" }}>
-          <div className={styles.featureIcon} style={{ "--icon-color": "#06b6d4" } as any}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
-            </svg>
+          {/* Stat Card 2 */}
+          <div className={`${styles.bentoItem} ${styles.statBento} glass-card`}>
+            <span className={styles.statValue}>15+</span>
+            <span className={styles.statLabel}>Expert Sessions</span>
           </div>
-          <h3>Resources</h3>
-          <p>Access curated reading lists, project repositories, technical documentation, and community-created learning materials.</p>
+
+          {/* Secondary Feature */}
+          <div className={`${styles.bentoItem} ${styles.featureBento} glass-card`}>
+            <div className={styles.bentoIcon} style={{ background: "rgba(139, 92, 246, 0.1)", color: "#8b5cf6" }}>
+              <UserIcon />
+            </div>
+            <h3>Network</h3>
+            <p>Connect with top-tier student developers and industry mentors.</p>
+          </div>
+
+          {/* Small Feature */}
+          <div className={`${styles.bentoItem} ${styles.smallBento} glass-card`}>
+            <h3>Hackathons</h3>
+            <p>24h sprints to build and ship innovative AI solutions.</p>
+          </div>
+
+          {/* Partners/Logos */}
+          <div className={`${styles.bentoItem} ${styles.logoBento} glass-card`}>
+            <div className={styles.logoGroup}>
+              <img src="/college-logo.svg" alt="BIC" className={styles.bentoCollegeLogo} />
+              <div className={styles.logoDivider} />
+              <span className={styles.partnerText}>Official Chapter</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA Section ─── */}
+      <section className={styles.finalCta}>
+        <div className={styles.ctaBackground}>
+          <div className={styles.orb1} />
+          <div className={styles.orb2} />
+        </div>
+        <div className={styles.ctaContent}>
+          <h2 className={styles.ctaTitle}>Don't watch the future. <br /><span>Build it.</span></h2>
+          <p className={styles.ctaText}>
+            Join the most ambitious student community at BIC. Access exclusive resources, 
+            mentorship, and a network that matters.
+          </p>
+          <div className={styles.ctaButtons}>
+            <button
+              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+              className="btn-primary"
+              style={{ padding: "1.25rem 3.5rem" }}
+            >
+              Join AI Horizon
+            </button>
+          </div>
         </div>
       </section>
     </div>

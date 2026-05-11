@@ -1,22 +1,27 @@
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
-  height: 72px;
+  height: 80px;
   display: flex;
   align-items: center;
   background: transparent;
-  border-bottom: 1px solid transparent;
-  transition: all var(--t-base);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .navbar.scrolled {
-  background: rgba(10, 14, 26, 0.8);
-  border-color: var(--border);
+  height: 64px;
+  top: 1rem;
+  margin: 0 auto;
+  max-width: 95%;
+  background: rgba(10, 14, 26, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  height: 64px;
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 0, 0, 0.2);
 }
 
 .container {
