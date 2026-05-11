@@ -1,0 +1,100 @@
+.page {
+  padding: 2rem 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.tableWrapper {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 1.25rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-sub);
+}
+
+.table th {
+  background: var(--bg-card-2);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.table tbody tr {
+  transition: background var(--t-fast);
+}
+
+.table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.04);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.eventTitle {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 1rem;
+}
+
+.status {
+  font-size: 0.65rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.status[data-status="OPEN_FOR_REGISTRATION"] { color: var(--success); background: var(--success-bg); }
+.status[data-status="ONGOING"] { color: var(--primary-light); background: rgba(59, 130, 246, 0.1); }
+.status[data-status="COMPLETED"] { color: var(--text-muted); background: rgba(148, 163, 184, 0.08); }
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.actions a {
+  color: var(--primary-light);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: color var(--t-fast);
+}
+
+.actions a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.viewLink {
+  color: var(--text-muted) !important;
+}
+
+.viewLink:hover {
+  color: var(--text-sub) !important;
+}
+
+.empty {
+  padding: 4rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 500;
+}

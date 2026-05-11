@@ -1,0 +1,116 @@
+import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { notFound } from "next/navigation";
+import { RegisterButton } from "@/components/events/RegisterButton";
+import { ExternalLinkIcon, UserIcon, CalendarIcon } from "@/components/icons";
+import styles from "./WorkshopDetail.module.css";
+
+const STATUS_LABEL: Record<string, string> = {
+  OPEN_FOR_REGISTRATION: "Open for Registration",
+  ONGOING: "Live Now",
+  COMPLETED: "Completed",
+};
+
+export default async function WorkshopDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const session = await getServerSession(authOptions);
+
+  const workshop = await prisma.workshop.findUnique({
+    where: { id },
+    include: { organizedBy: { select: { name: true } }, media: true },
+  });
+
+  if (!workshop) notFound();
+
+  let isRegistered = false;
+  if (session) {
+    const reg = await prisma.registration.findUnique({
+      where: { userId_workshopId: { userId: (session.user as any).id, workshopId: id } },
+    });
+    isRegistered = !!reg;
+  }
+
+  const externalLinks = (workshop.externalLinks as any[]) || [];
+
+  return (
+    <div className={styles.container}>
+      <div className={`${styles.heroBanner} ${
+        workshop.status === "OPEN_FOR_REGISTRATION" ? styles.heroOpen :
+        workshop.status === "ONGOING" ? styles.heroOngoing : styles.heroCompleted
+      }`}>
+        <div className={styles.heroInner}>
+          <span className={`badge ${
+            workshop.status === "OPEN_FOR_REGISTRATION" ? "badge-open" :
+            workshop.status === "ONGOING" ? "badge-ongoing" : "badge-completed"
+          }`}>{STATUS_LABEL[workshop.status]}</span>
+          <h1 className={styles.heroTitle}>{workshop.title}</h1>
+          <div className={styles.heroMeta}>
+            <span>
+              <CalendarIcon className="inline-block w-4 h-4" />{" "}
+              {new Date(workshop.schedule).toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+              {" at "}
+              {new Date(workshop.schedule).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.content}>
+        <div className={styles.main}>
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Workshop Overview</h2>
+            <p className={styles.description}>{workshop.description}</p>
+          </section>
+
+          {workshop.speakers && (
+            <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Speakers &amp; Mentors</h2>
+              <div className={`${styles.speakersCard} glass-card`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                {workshop.speakers}
+              </div>
+            </section>
+          )}
+
+          {externalLinks.length > 0 && (
+            <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Learning Materials &amp; Links</h2>
+              <div className={styles.linkGrid}>
+                {externalLinks.map((link, idx) => (
+                  <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className={`${styles.linkCard} glass-card`}>
+                    <div>
+                      <p className={styles.linkLabel}>{link.label}</p>
+                      <p className={styles.linkUrl}>{new URL(link.url).hostname}</p>
+                    </div>
+                    <ExternalLinkIcon className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {workshop.media.length > 0 && (
+            <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Gallery</h2>
+              <div className={styles.mediaGrid}>
+                {workshop.media.map((item) => (
+                  <div key={item.id} className={styles.mediaItem}>
+                    {item.type === "IMAGE" ? <img src={item.url} alt="Workshop media" /> : <video src={item.url} controls />}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <aside className={styles.sidebar}>
+          <div className={`${styles.sideCard} glass-card`}>
+            <h3>Enroll</h3>
+            <RegisterButton id={id} type="workshop" isRegistered={isRegistered} isOpen={workshop.status === "OPEN_FOR_REGISTRATION"} />
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+  PUBLIC
+}
+
+enum EventStatus {
+  OPEN_FOR_REGISTRATION
+  ONGOING
+  COMPLETED
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  ATTENDED
+  REJECTED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum EventType {
+  ONE_DAY
+  MULTIPLE_DAY
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  passwordHash  String?
+  role          Role      @default(PUBLIC)
+  collegeId     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  organizedEvents    Event[]
+  organizedWorkshops Workshop[]
+  registrations      Registration[]
+  attendances        Attendance[]    @relation("UserAttendance")
+  verifiedAttendances Attendance[]   @relation("AdminVerification")
+  uploadedMedia      Media[]
+}
+
+model Event {
+  id            String      @id @default(uuid())
+  title         String
+  description   String
+  externalLinks Json?       // Array of { label: string, url: string }
+  organizedBy   User        @relation(fields: [organizedById], references: [id])
+  organizedById String
+  status        EventStatus @default(OPEN_FOR_REGISTRATION)
+  eventType     EventType   @default(ONE_DAY)
+  startDate     DateTime?
+  endDate       DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  registrations Registration[]
+  attendances   Attendance[]
+  media         Media[]
+}
+
+model Workshop {
+  id            String      @id @default(uuid())
+  title         String
+  description   String
+  externalLinks Json?       // Array of { label: string, url: string }
+  organizedBy   User        @relation(fields: [organizedById], references: [id])
+  organizedById String
+  speakers      String?     // Text or JSON for mentors
+  schedule      DateTime
+  materials     Json?       // Links/notes
+  status        EventStatus @default(OPEN_FOR_REGISTRATION)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  registrations Registration[]
+  attendances   Attendance[]
+  media         Media[]
+}
+
+model Registration {
+  id            String             @id @default(uuid())
+  user          User               @relation(fields: [userId], references: [id])
+  userId        String
+  event         Event?             @relation(fields: [eventId], references: [id])
+  eventId       String?
+  workshop      Workshop?          @relation(fields: [workshopId], references: [id])
+  workshopId    String?
+  status        RegistrationStatus @default(REGISTERED)
+  formResponses Json?              // Dynamic fields
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@unique([userId, eventId])
+  @@unique([userId, workshopId])
+}
+
+model Attendance {
+  id            String    @id @default(uuid())
+  user          User      @relation("UserAttendance", fields: [userId], references: [id])
+  userId        String
+  event         Event?    @relation(fields: [eventId], references: [id])
+  eventId       String?
+  workshop      Workshop? @relation(fields: [workshopId], references: [id])
+  workshopId    String?
+  verifiedBy    User      @relation("AdminVerification", fields: [verifiedById], references: [id])
+  verifiedById  String
+  timestamp     DateTime  @default(now())
+
+  @@unique([userId, eventId])
+  @@unique([userId, workshopId])
+}
+
+model Media {
+  id            String    @id @default(uuid())
+  url           String
+  type          MediaType
+  event         Event?    @relation(fields: [eventId], references: [id])
+  eventId       String?
+  workshop      Workshop? @relation(fields: [workshopId], references: [id])
+  workshopId    String?
+  uploadedBy    User      @relation(fields: [uploadedById], references: [id])
+  uploadedById  String
+  createdAt     DateTime  @default(now())
+}
