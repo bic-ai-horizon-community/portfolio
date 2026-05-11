@@ -65,13 +65,12 @@ export default async function Home() {
           </div>
 
           <h1 className={styles.heroTitle}>
-            Architecting the <br />
-            <span className={styles.gradientText}>Intelligence Frontier</span>
+            Collaboration<br />
+            <span className={styles.gradientText}>For Innovation</span>
           </h1>
 
           <p className={styles.heroDescription}>
-            The definitive ecosystem for AI innovation at Biratnagar International College.
-            We bridge the gap between academic theory and industry grade deployment.
+            The place for AI enthusiasts at BIC to explore, learn, and research.
           </p>
 
           <HeroActions />
@@ -107,7 +106,7 @@ export default async function Home() {
                 <CalendarIcon />
               </div>
               <h3>Hands-on Workshops</h3>
-              <p>Move beyond the basics. Build production-ready RAG pipelines, fine-tune LLMs, and deploy computer vision models.</p>
+              <p>Collaborate on innovative projects, attend workshops, and connect with fellow AI enthusiasts. Learn and Research on our community project and many more. </p>
             </div>
             <div className={styles.bentoGraphic}>
               <div className={styles.abstractShapes}>
