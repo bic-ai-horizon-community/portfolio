@@ -32,7 +32,7 @@ export async function GET() {
           select: { name: true, email: true },
         },
       },
-      orderBy: { schedule: "asc" },
+      orderBy: [{ schedule: "desc" }, { createdAt: "desc" }],
     });
     return NextResponse.json(workshops);
   } catch (error) {

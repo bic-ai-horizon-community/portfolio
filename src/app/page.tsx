@@ -1,11 +1,82 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import styles from "./Home.module.css";
 import { ArrowRightIcon, CalendarIcon, ClockIcon, UserIcon } from "@/components/icons";
 
+type TimelineItem = {
+  id: string;
+  title: string;
+  description?: string | null;
+  createdAt?: string;
+  startDate?: string | null;
+  schedule?: string | null;
+};
+
+const getLatestDate = (item: TimelineItem) => {
+  const possibleDates = [item.startDate, item.schedule, item.createdAt];
+  const validDate = possibleDates.find((dateValue) => dateValue && !Number.isNaN(new Date(dateValue).getTime()));
+  return validDate ? new Date(validDate).getTime() : 0;
+};
+
+const formatTimelineDate = (item: TimelineItem) => {
+  const possibleDates = [item.startDate, item.schedule, item.createdAt];
+  const validDate = possibleDates.find((dateValue) => dateValue && !Number.isNaN(new Date(dateValue).getTime()));
+  return validDate
+    ? new Date(validDate).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "Date TBD";
+};
+
 export default function Home() {
+  const [events, setEvents] = useState<TimelineItem[]>([]);
+  const [workshops, setWorkshops] = useState<TimelineItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLandingData = async () => {
+      try {
+        const [eventsResponse, workshopsResponse] = await Promise.all([
+          fetch("/api/events"),
+          fetch("/api/workshops"),
+        ]);
+
+        if (!eventsResponse.ok || !workshopsResponse.ok) {
+          throw new Error("Failed to fetch landing data");
+        }
+
+        const [eventsData, workshopsData] = await Promise.all([
+          eventsResponse.json(),
+          workshopsResponse.json(),
+        ]);
+
+        setEvents(Array.isArray(eventsData) ? eventsData : []);
+        setWorkshops(Array.isArray(workshopsData) ? workshopsData : []);
+      } catch {
+        setEvents([]);
+        setWorkshops([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLandingData();
+  }, []);
+
+  const latestEvents = useMemo(
+    () => [...events].sort((a, b) => getLatestDate(b) - getLatestDate(a)).slice(0, 3),
+    [events]
+  );
+  const latestWorkshops = useMemo(
+    () => [...workshops].sort((a, b) => getLatestDate(b) - getLatestDate(a)).slice(0, 3),
+    [workshops]
+  );
+
   return (
     <div className={styles.page}>
       {/* ─── Hero Section ─── */}
@@ -83,7 +154,7 @@ export default function Home() {
 
           {/* Stat Card 1 */}
           <div className={`${styles.bentoItem} ${styles.statBento} glass-card`}>
-            <span className={styles.statValue}>250+</span>
+            <span className={styles.statValue}>30+</span>
             <span className={styles.statLabel}>Active Members</span>
           </div>
 
@@ -119,6 +190,66 @@ export default function Home() {
         </div>
       </section>
 
+      <section className={styles.timelineSection}>
+        <div className={styles.timelineGrid}>
+          <div className={`glass-card ${styles.timelineCard}`}>
+            <div className={styles.timelineHeader}>
+              <h3>Latest Events</h3>
+              <Link href="/events">View all</Link>
+            </div>
+            <div className={styles.timelineList}>
+              {isLoading ? (
+                <p className={styles.timelineFallback}>Loading events...</p>
+              ) : latestEvents.length === 0 ? (
+                <p className={styles.timelineFallback}>No events available yet.</p>
+              ) : (
+                latestEvents.map((event) => (
+                  <article key={event.id} className={styles.timelineItem}>
+                    <div className={styles.timelineTitleRow}>
+                      <CalendarIcon />
+                      <h4>{event.title}</h4>
+                    </div>
+                    <p>{event.description?.slice(0, 110) || "Details coming soon."}</p>
+                    <span className={styles.timelineMeta}>
+                      <ClockIcon />
+                      {formatTimelineDate(event)}
+                    </span>
+                  </article>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className={`glass-card ${styles.timelineCard}`}>
+            <div className={styles.timelineHeader}>
+              <h3>Latest Workshops</h3>
+              <Link href="/workshops">View all</Link>
+            </div>
+            <div className={styles.timelineList}>
+              {isLoading ? (
+                <p className={styles.timelineFallback}>Loading workshops...</p>
+              ) : latestWorkshops.length === 0 ? (
+                <p className={styles.timelineFallback}>No workshops available yet.</p>
+              ) : (
+                latestWorkshops.map((workshop) => (
+                  <article key={workshop.id} className={styles.timelineItem}>
+                    <div className={styles.timelineTitleRow}>
+                      <CalendarIcon />
+                      <h4>{workshop.title}</h4>
+                    </div>
+                    <p>{workshop.description?.slice(0, 110) || "Details coming soon."}</p>
+                    <span className={styles.timelineMeta}>
+                      <ClockIcon />
+                      {formatTimelineDate(workshop)}
+                    </span>
+                  </article>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── CTA Section ─── */}
       <section className={styles.finalCta}>
         <div className={styles.ctaBackground}>
@@ -126,7 +257,7 @@ export default function Home() {
           <div className={styles.orb2} />
         </div>
         <div className={styles.ctaContent}>
-          <h2 className={styles.ctaTitle}>Don't watch the future. <br /><span>Build it.</span></h2>
+          <h2 className={styles.ctaTitle}>Don&apos;t watch the future. <br /><span>Build it.</span></h2>
           <p className={styles.ctaText}>
             Join the most ambitious student community at BIC. Access exclusive resources, 
             mentorship, and a network that matters.

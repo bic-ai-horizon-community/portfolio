@@ -29,7 +29,7 @@ export async function GET() {
           select: { name: true, email: true },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ startDate: "desc" }, { createdAt: "desc" }],
     });
     return NextResponse.json(events);
   } catch (error) {

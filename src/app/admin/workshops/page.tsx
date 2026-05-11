@@ -13,7 +13,7 @@ export default async function AdminWorkshopsPage() {
   }
 
   const workshops = await prisma.workshop.findMany({
-    orderBy: { schedule: "asc" },
+    orderBy: { startDate: "desc" },
     include: {
       _count: {
         select: { registrations: true, attendances: true },
