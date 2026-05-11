@@ -69,7 +69,11 @@ export default async function WorkshopsPage() {
                   </>
                 )}
               </div>
-              <p className={styles.description}>{workshop.description.substring(0, 120)}…</p>
+              {workshop.speakers && (
+                <div className={styles.conductedBy}>
+                  Speaker: <strong>{workshop.speakers}</strong>
+                </div>
+              )}
               <Link href={`/workshops/${workshop.id}`} className={styles.viewBtn}>
                 Learn More
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

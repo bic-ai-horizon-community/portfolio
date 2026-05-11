@@ -81,6 +81,21 @@
 
 .speakersCard svg { color: var(--primary); flex-shrink: 0; }
 
+.conductedCard {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.conductedCard svg { color: var(--accent); flex-shrink: 0; }
+
 .linkGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
