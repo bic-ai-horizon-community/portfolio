@@ -85,7 +85,7 @@
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  color: var(--text-muted);
+  color: var(--text-sub);
   font-size: 0.875rem;
   font-weight: 600;
 }

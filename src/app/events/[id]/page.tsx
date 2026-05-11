@@ -52,7 +52,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               <CalendarIcon className="w-5 h-5" />
               {event.eventType === "ONE_DAY" ? (
                 <span>
-                  {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                  {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               ) : (
                 <span>
@@ -63,7 +63,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             
             {event.startTime && (
               <>
-                <span className={styles.metaDivider}>|</span>
+                <span className={styles.metaDivider}>·</span>
                 <div className={styles.metaItem}>
                   <ClockIcon className="w-5 h-5" />
                   <span>{event.startTime} - {event.endTime}</span>

@@ -53,18 +53,19 @@ export default async function WorkshopsPage() {
                 <CalendarIcon className="w-4 h-4" />
                 {workshop.eventType === "ONE_DAY" ? (
                   <span>
-                    {new Date(workshop.startDate || workshop.schedule!).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
+                    {new Date(workshop.startDate || workshop.schedule!).toLocaleDateString('en-US', { month: "long", day: "numeric", year: "numeric" })}
                   </span>
                 ) : (
                   <span>
-                    {new Date(workshop.startDate!).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    {new Date(workshop.startDate!).toLocaleDateString('en-US', { month: "short", day: "numeric" })}
                     {" - "}
-                    {new Date(workshop.endDate!).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                    {new Date(workshop.endDate!).toLocaleDateString('en-US', { month: "short", day: "numeric", year: "numeric" })}
                   </span>
                 )}
                 {workshop.startTime && (
                   <>
                     {" · "}
+                    <svg className="w-4 h-4 inline-block mr-1 opacity-70" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     {workshop.startTime} - {workshop.endTime}
                   </>
                 )}

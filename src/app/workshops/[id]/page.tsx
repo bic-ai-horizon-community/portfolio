@@ -51,7 +51,7 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
               <CalendarIcon className="w-5 h-5" />
               {workshop.eventType === "ONE_DAY" ? (
                 <span>
-                  {(workshop.startDate || workshop.schedule) && new Date(workshop.startDate || workshop.schedule!).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                  {(workshop.startDate || workshop.schedule) && new Date(workshop.startDate || workshop.schedule!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               ) : (
                 <span>
@@ -62,7 +62,7 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
             
             {workshop.startTime && (
               <>
-                <span className={styles.metaDivider}>|</span>
+                <span className={styles.metaDivider}>·</span>
                 <div className={styles.metaItem}>
                   <ClockIcon className="w-5 h-5" />
                   <span>{workshop.startTime} - {workshop.endTime}</span>

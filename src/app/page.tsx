@@ -26,10 +26,10 @@ const formatTimelineDate = (item: TimelineItem) => {
   const validDate = possibleDates.find((dateValue) => dateValue && !Number.isNaN(new Date(dateValue).getTime()));
   return validDate
     ? new Date(validDate).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
     : "Date TBD";
 };
 
@@ -88,14 +88,14 @@ export default function Home() {
               <span>BIC AI Community</span>
             </div>
           </div>
-          
+
           <h1 className={styles.heroTitle}>
             Architecting the <br />
             <span className={styles.gradientText}>Intelligence Frontier</span>
           </h1>
-          
+
           <p className={styles.heroDescription}>
-            The definitive ecosystem for AI innovation at Biratnagar International College. 
+            The definitive ecosystem for AI innovation at Biratnagar International College.
             We bridge the gap between academic theory and industry-grade deployment.
           </p>
 
@@ -121,7 +121,7 @@ export default function Home() {
             </div>
             <div className={styles.cardBody}>
               <code className={styles.codeLine}><span>$</span> ai init community</code>
-              <code className={styles.codeLine}><span className={styles.codeBlue}>SUCCESS</span> Found 250+ engineers...</code>
+              <code className={styles.codeLine}><span className={styles.codeBlue}>SUCCESS</span> Found 25+ developers...</code>
               <code className={styles.codeLine}><span className={styles.codePurple}>FETCH</span> Latest workshops...</code>
               <code className={styles.codeLine}><span className={styles.codeGreen}>READY</span> Shaping the future.</code>
             </div>
@@ -259,7 +259,7 @@ export default function Home() {
         <div className={styles.ctaContent}>
           <h2 className={styles.ctaTitle}>Don&apos;t watch the future. <br /><span>Build it.</span></h2>
           <p className={styles.ctaText}>
-            Join the most ambitious student community at BIC. Access exclusive resources, 
+            Join the most ambitious student community at BIC. Access exclusive resources,
             mentorship, and a network that matters.
           </p>
           <div className={styles.ctaButtons}>

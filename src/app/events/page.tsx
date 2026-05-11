@@ -50,11 +50,21 @@ export default async function EventsPage() {
               <h2 className={styles.cardTitle}>{event.title}</h2>
               <div className={styles.cardMeta}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                {!event.endDate || event.startDate?.getTime() === event.endDate?.getTime() ? (
+                  <span>
+                    {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { month: "long", day: "numeric", year: "numeric" })}
+                  </span>
+                ) : (
+                  <span>
+                    {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { month: "short", day: "numeric" })}
+                    {" - "}
+                    {event.endDate && new Date(event.endDate).toLocaleDateString('en-US', { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                )}
                 {event.startTime && (
                   <>
-                    <span className={styles.metaDivider}>•</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    {" · "}
+                    <svg className="w-4 h-4 inline-block mr-1 opacity-70" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     {event.startTime} - {event.endTime}
                   </>
                 )}
