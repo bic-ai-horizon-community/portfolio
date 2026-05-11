@@ -124,8 +124,8 @@ export default async function Home() {
 
           {/* Stat Card 2 */}
           <div className={`${styles.bentoItem} ${styles.statBento} glass-card`}>
-            <span className={styles.statValue}>15+</span>
-            <span className={styles.statLabel}>Expert Sessions</span>
+            <span className={styles.statValue}>10+</span>
+            <span className={styles.statLabel}>Collaborative Sessions</span>
           </div>
 
           {/* Secondary Feature */}
