@@ -47,7 +47,9 @@ export default async function AdminWorkshopsPage() {
               <tr key={workshop.id}>
                 <td className={styles.titleCell}>{workshop.title}</td>
                 <td className={styles.dateCell}>
-                  {new Date(workshop.schedule).toLocaleDateString()}
+                  {workshop.schedule || workshop.startDate 
+                    ? new Date(workshop.schedule || workshop.startDate!).toLocaleDateString() 
+                    : "TBD"}
                 </td>
                 <td>
                   <span className={styles.status} data-status={workshop.status}>
