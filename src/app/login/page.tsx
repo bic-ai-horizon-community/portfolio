@@ -42,8 +42,11 @@ function LoginContent() {
       {/* Right sign-in side */}
       <div className={styles.formSide}>
         <div className={styles.card}>
+          <div className={styles.mobileLogo}>
+            <img src="/ai-horizon-logo.png" alt="AI Horizon Logo" />
+          </div>
           <div className={styles.formHeader}>
-            <h1 className={styles.title}>Welcome to AI&nbsp;Horizon</h1>
+            <h1 className={styles.title}>Welcome to AI Horizon</h1>
             <p className={styles.subtitle}>Sign in with your Biratnagar International College Google account</p>
           </div>
 
