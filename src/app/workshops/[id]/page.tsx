@@ -47,25 +47,27 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
           }`}>{STATUS_LABEL[workshop.status]}</span>
           <h1 className={styles.heroTitle}>{workshop.title}</h1>
           <div className={styles.heroMeta}>
-            <CalendarIcon className="w-5 h-5" />
-            {workshop.eventType === "ONE_DAY" ? (
-              <span>
-                {(workshop.startDate || workshop.schedule) && new Date(workshop.startDate || workshop.schedule!).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            <div className={styles.metaItem}>
+              <CalendarIcon className="w-5 h-5" />
+              {workshop.eventType === "ONE_DAY" ? (
+                <span>
+                  {(workshop.startDate || workshop.schedule) && new Date(workshop.startDate || workshop.schedule!).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </span>
+              ) : (
+                <span>
+                  {workshop.startDate && new Date(workshop.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {workshop.endDate && new Date(workshop.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+              )}
+            </div>
+            
+            {workshop.startTime && (
+              <>
                 <span className={styles.metaDivider}>|</span>
-                <ClockIcon className="w-4 h-4 inline-block mr-1" />
-                {workshop.startTime} - {workshop.endTime}
-              </span>
-            ) : (
-              <span>
-                {workshop.startDate && new Date(workshop.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {workshop.endDate && new Date(workshop.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                {workshop.startTime && workshop.endTime && (
-                  <>
-                    <span className={styles.metaDivider}>|</span>
-                    <ClockIcon className="w-4 h-4 inline-block mr-1" />
-                    {workshop.startTime} - {workshop.endTime}
-                  </>
-                )}
-              </span>
+                <div className={styles.metaItem}>
+                  <ClockIcon className="w-5 h-5" />
+                  <span>{workshop.startTime} - {workshop.endTime}</span>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -139,10 +141,12 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
         </div>
 
         <aside className={styles.sidebar}>
-          <div className={`${styles.sideCard} glass-card`}>
-            <h3>Enroll</h3>
-            <RegisterButton id={id} type="workshop" isRegistered={isRegistered} isOpen={workshop.status === "OPEN_FOR_REGISTRATION"} />
-          </div>
+          {workshop.status !== "COMPLETED" && (
+            <div className={`${styles.sideCard} glass-card`}>
+              <h3>Enroll</h3>
+              <RegisterButton id={id} type="workshop" isRegistered={isRegistered} isOpen={workshop.status === "OPEN_FOR_REGISTRATION"} />
+            </div>
+          )}
         </aside>
       </div>
     </div>

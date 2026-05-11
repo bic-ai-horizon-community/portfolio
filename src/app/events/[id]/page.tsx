@@ -48,25 +48,27 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           }`}>{STATUS_LABEL[event.status]}</span>
           <h1 className={styles.heroTitle}>{event.title}</h1>
           <div className={styles.heroMeta}>
-            <CalendarIcon className="w-5 h-5" />
-            {event.eventType === "ONE_DAY" ? (
-              <span>
-                {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            <div className={styles.metaItem}>
+              <CalendarIcon className="w-5 h-5" />
+              {event.eventType === "ONE_DAY" ? (
+                <span>
+                  {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </span>
+              ) : (
+                <span>
+                  {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {event.endDate && new Date(event.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+              )}
+            </div>
+            
+            {event.startTime && (
+              <>
                 <span className={styles.metaDivider}>|</span>
-                <ClockIcon className="w-4 h-4 inline-block mr-1" />
-                {event.startTime} - {event.endTime}
-              </span>
-            ) : (
-              <span>
-                {event.startDate && new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {event.endDate && new Date(event.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                {event.startTime && event.endTime && (
-                  <>
-                    <span className={styles.metaDivider}>|</span>
-                    <ClockIcon className="w-4 h-4 inline-block mr-1" />
-                    {event.startTime} - {event.endTime}
-                  </>
-                )}
-              </span>
+                <div className={styles.metaItem}>
+                  <ClockIcon className="w-5 h-5" />
+                  <span>{event.startTime} - {event.endTime}</span>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -133,11 +135,13 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <aside className={styles.sidebar}>
-          <div className={`${styles.sideCard} glass-card`}>
-            <h3>Register</h3>
-            <RegisterButton id={id} type="event" isRegistered={isRegistered} isOpen={event.status === "OPEN_FOR_REGISTRATION"} />
-            <p className={styles.sideNote}>Secure your spot for this event.</p>
-          </div>
+          {event.status !== "COMPLETED" && (
+            <div className={`${styles.sideCard} glass-card`}>
+              <h3>Register</h3>
+              <RegisterButton id={id} type="event" isRegistered={isRegistered} isOpen={event.status === "OPEN_FOR_REGISTRATION"} />
+              <p className={styles.sideNote}>Secure your spot for this event.</p>
+            </div>
+          )}
         </aside>
       </div>
     </div>
