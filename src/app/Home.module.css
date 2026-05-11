@@ -28,7 +28,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  background: rgba(59, 130, 246, 0.08);
+  background: rgba(249, 115, 22, 0.08);
   color: var(--primary-light);
   padding: 0.6rem 1.5rem;
   border-radius: var(--radius-full);
@@ -36,7 +36,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(249, 115, 22, 0.2);
   backdrop-filter: blur(12px);
 }
 
@@ -63,7 +63,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.3));
+  filter: drop-shadow(0 0 30px rgba(249, 115, 22, 0.25));
 }
 
 .heroDescription {
@@ -94,11 +94,13 @@
   box-shadow: var(--shadow-lg), 0 0 60px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   transform: perspective(1000px) rotateY(-15deg) rotateX(10deg);
-  transition: transform 0.5s ease;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: float 8s ease-in-out infinite;
 }
 
 .visualCard:hover {
-  transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+  transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) scale(1.02);
+  border-color: rgba(249, 115, 22, 0.3);
 }
 
 .cardHeader {
@@ -139,16 +141,17 @@
   right: -20px;
   width: 120px;
   height: 120px;
-  background: var(--glass);
-  backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-radius: 24px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  box-shadow: var(--shadow-lg);
-  animation: float 6s ease-in-out infinite;
+  box-shadow: var(--shadow-lg), 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: float 6s ease-in-out infinite reverse;
 }
 
 .floatingLogo img {
@@ -173,26 +176,41 @@
 }
 
 .timelineCard {
-  padding: 2rem;
+  padding: 2.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  height: 100%;
 }
 
 .timelineHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .timelineHeader h3 {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 850;
   color: var(--text-main);
+  letter-spacing: -0.03em;
 }
 
 .timelineHeader a {
-  color: var(--primary-light);
+  color: var(--primary);
   font-size: 0.875rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all var(--t-fast);
+}
+
+.timelineHeader a:hover {
+  color: var(--primary-light);
+  transform: translateX(4px);
 }
 
 .timelineList {
@@ -203,9 +221,18 @@
 
 .timelineItem {
   border: 1px solid var(--border);
-  border-radius: 14px;
-  background: rgba(15, 23, 42, 0.4);
-  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1.5rem;
+  transition: all var(--t-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.timelineItem:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--primary-glow);
+  transform: translateX(4px);
 }
 
 .timelineTitleRow {
@@ -224,14 +251,19 @@
 .timelineTitleRow svg {
   width: 18px;
   height: 18px;
-  color: var(--primary-light);
+  color: var(--primary);
 }
 
 .timelineItem p {
   color: var(--text-sub);
   font-size: 0.875rem;
-  line-height: 1.55;
-  margin: 0 0 0.75rem;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .timelineMeta {
@@ -276,9 +308,9 @@
 }
 
 .bentoItem:hover {
-  transform: translateY(-5px);
-  border-color: var(--border-focus);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
+  transform: translateY(-8px);
+  border-color: var(--border-hover);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(249, 115, 22, 0.08);
 }
 
 .mainBento { grid-area: main; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; }
@@ -359,7 +391,7 @@
   left: 10%;
   width: 100px;
   height: 100px;
-  background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
   filter: blur(30px);
   opacity: 0.2;
 }
@@ -406,12 +438,7 @@
 }
 
 .orb1 {
-  position: absolute;
-  top: -20%;
-  left: -10%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, transparent 70%);
   filter: blur(80px);
 }
 
@@ -421,7 +448,7 @@
   right: -10%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
   filter: blur(80px);
 }
 
