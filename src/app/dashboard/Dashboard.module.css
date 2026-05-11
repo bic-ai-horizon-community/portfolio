@@ -147,6 +147,13 @@
   border: 1px solid var(--danger-border);
 }
 
+@media (max-width: 900px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+}
+
 @media (max-width: 640px) {
   .stats { grid-template-columns: 1fr; }
+  .item { flex-direction: column; align-items: flex-start; padding: 1.5rem; }
+  .itemIcon { display: none; }
 }

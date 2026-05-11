@@ -237,7 +237,7 @@
   animation: fadeIn var(--t-fast) both;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .desktopLinks,
   .authGroup {
     display: none;
@@ -245,5 +245,9 @@
 
   .hamburger {
     display: flex;
+  }
+  
+  .navbar.scrolled {
+    max-width: calc(100% - 2rem);
   }
 }

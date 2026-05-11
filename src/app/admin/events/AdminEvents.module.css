@@ -7,11 +7,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
 .tableWrapper {
-  overflow: hidden;
+  overflow-x: auto;
   border-radius: var(--radius-lg);
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
