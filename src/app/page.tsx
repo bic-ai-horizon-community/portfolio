@@ -4,6 +4,9 @@ import styles from "./Home.module.css";
 import { CalendarIcon, ClockIcon, UserIcon } from "@/components/icons";
 import Link from "next/link";
 
+export const revalidate = 60;
+
+
 type TimelineItem = {
   id: string;
   title: string;
