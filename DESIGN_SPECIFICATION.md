@@ -5,7 +5,7 @@ This document outlines the current UI/UX architecture, visual identity, and page
 ---
 
 ## 1. Brand Identity & Vision
-**Core Mission**: Bridge the gap between academic theory and industry-grade AI deployment.
+**Core Mission**: Bridge the gap between academic theory and industry grade AI deployment.
 **Vibe**: Premium, Futuristic, High-Tech, Academic, and "Developer-First".
 **Target Audience**: Computer Science students, AI enthusiasts, and tech industry mentors.
 

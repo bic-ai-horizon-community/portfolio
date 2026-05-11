@@ -12,11 +12,11 @@ export const HeroActions = () => {
         onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
         className="btn-primary"
       >
-        Start Your Journey <ArrowRightIcon className="w-5 h-5 ml-2" />
+        Lets's Join <ArrowRightIcon className="w-5 h-5 ml-2" />
       </button>
-      <Link href="/events" className="btn-secondary">
+      {/* <Link href="/events" className="btn-secondary">
         View Roadmap
-      </Link>
+      </Link> */}
     </div>
   );
 };

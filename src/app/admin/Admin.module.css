@@ -169,6 +169,71 @@
   flex-shrink: 0;
 }
 
+/* Admin Layout & Mobile Block */
+.adminContainer {
+  position: relative;
+  min-height: 100vh;
+}
+
+.mobileBlock {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg-main);
+  padding: 2rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.blockContent {
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.blockIcon {
+  width: 80px;
+  height: 80px;
+  background: rgba(249, 115, 22, 0.05);
+  color: var(--primary);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-focus);
+}
+
+.blockContent h1 {
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--text-main);
+}
+
+.blockContent p {
+  color: var(--text-sub);
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.desktopContent {
+  display: block;
+}
+
+@media (max-width: 1024px) {
+  .mobileBlock {
+    display: flex;
+  }
+  .desktopContent {
+    display: none;
+  }
+}
+
 @media (max-width: 640px) {
   .stats { grid-template-columns: 1fr; }
   .mgmtGrid { grid-template-columns: 1fr; }

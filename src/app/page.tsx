@@ -58,10 +58,10 @@ export default async function Home() {
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <div className={styles.badgeWrapper}>
-            <div className={styles.badge}>
+            {/* <div className={styles.badge}>
               <span className={styles.badgeDot} />
               <span>BIC AI Community</span>
-            </div>
+            </div> */}
           </div>
 
           <h1 className={styles.heroTitle}>
@@ -71,7 +71,7 @@ export default async function Home() {
 
           <p className={styles.heroDescription}>
             The definitive ecosystem for AI innovation at Biratnagar International College.
-            We bridge the gap between academic theory and industry-grade deployment.
+            We bridge the gap between academic theory and industry grade deployment.
           </p>
 
           <HeroActions />
@@ -135,7 +135,7 @@ export default async function Home() {
               <UserIcon />
             </div>
             <h3>Network</h3>
-            <p>Connect with top-tier student developers and industry mentors.</p>
+            <p>Connect with curious and learning oriented student developers and industry mentors.</p>
           </div>
 
           {/* Small Feature */}
