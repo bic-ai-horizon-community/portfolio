@@ -10,6 +10,9 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "AI Horizon | Student AI Community",
   description: "The premier student community for mastering Artificial Intelligence — through workshops, events, and hands-on projects.",
+  icons: {
+    icon: "/ai-horizon-logo.png",
+  },
 };
 
 export default function RootLayout({
