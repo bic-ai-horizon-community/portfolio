@@ -3,7 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { RegisterButton } from "@/components/events/RegisterButton";
-import { ExternalLinkIcon, UserIcon, CalendarIcon, ClockIcon } from "@/components/icons";
+import { ExternalLinkIcon, CalendarIcon, ClockIcon } from "@/components/icons";
+import QRCode from "qrcode";
 import styles from "./WorkshopDetail.module.css";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -30,6 +31,20 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
     });
     isRegistered = !!reg;
   }
+
+  // Generate QR code pointing to this workshop
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const isOngoing = workshop.status === "ONGOING";
+  
+  const qrUrl = isOngoing 
+    ? `${baseUrl}/attendance/workshop/${id}` 
+    : `${baseUrl}/register/workshop/${id}`;
+
+  const qrDataUrl = await QRCode.toDataURL(qrUrl, {
+    width: 220,
+    margin: 2,
+    color: { dark: "#fafaf9", light: "#1c1917" },
+  });
 
   const externalLinks = (workshop.externalLinks as any[]) || [];
   const dailySchedules = (workshop.dailySchedules as any[]) || [];
@@ -143,8 +158,29 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
         <aside className={styles.sidebar}>
           {workshop.status !== "COMPLETED" && (
             <div className={`${styles.sideCard} glass-card`}>
-              <h3>Enroll</h3>
-              <RegisterButton id={id} type="workshop" isRegistered={isRegistered} isOpen={workshop.status === "OPEN_FOR_REGISTRATION"} />
+              <h3>{isOngoing ? "Attendance" : "Enroll"}</h3>
+              {!isOngoing && (
+                <RegisterButton id={id} type="workshop" isRegistered={isRegistered} isOpen={workshop.status === "OPEN_FOR_REGISTRATION"} />
+              )}
+
+              {/* QR Code */}
+              <div className={styles.qrDivider} />
+              <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
+              <div className={styles.qrWrap}>
+                <img
+                  src={qrDataUrl}
+                  alt={`QR code for ${workshop.title}`}
+                  width={180}
+                  height={180}
+                  className={styles.qrImage}
+                  style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }}
+                />
+                <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                <div className={styles.corner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                <div className={styles.corner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+              </div>
+              <p className={styles.sideNote}>{isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}</p>
             </div>
           )}
         </aside>

@@ -2,7 +2,7 @@ import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "@/lib/prisma";
 
-const ALLOWED_DOMAIN = "bicnepal.edu.np";
+const ALLOWED_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN || "bicnepal.edu.np";
 
 export const authOptions: AuthOptions = {
   providers: [

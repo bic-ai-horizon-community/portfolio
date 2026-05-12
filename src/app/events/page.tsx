@@ -52,7 +52,7 @@ export default async function EventsPage() {
                   event.status === "OPEN_FOR_REGISTRATION" ? "badge-open" :
                   event.status === "ONGOING" ? "badge-ongoing" : "badge-completed"
                 }`}>
-                  {event.status === "OPEN_FOR_REGISTRATION" && <span className={styles.liveDot} />}
+                  {(event.status === "OPEN_FOR_REGISTRATION" || event.status === "ONGOING") && <span className={styles.liveDot} />}
                   {STATUS_LABEL[event.status]}
                 </span>
               </div>

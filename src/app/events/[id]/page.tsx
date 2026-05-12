@@ -3,7 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { RegisterButton } from "@/components/events/RegisterButton";
-import { ExternalLinkIcon, UserIcon, CalendarIcon, ClockIcon } from "@/components/icons";
+import { ExternalLinkIcon, CalendarIcon, ClockIcon } from "@/components/icons";
+import QRCode from "qrcode";
 import styles from "./EventDetail.module.css";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -30,6 +31,21 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     });
     isRegistered = !!reg;
   }
+
+  // Generate QR code pointing to this event page
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const isOngoing = event.status === "ONGOING";
+  
+  // The URL encoded in the QR code will tell the scanner what to do
+  const qrUrl = isOngoing 
+    ? `${baseUrl}/attendance/event/${id}` 
+    : `${baseUrl}/register/event/${id}`;
+
+  const qrDataUrl = await QRCode.toDataURL(qrUrl, {
+    width: 220,
+    margin: 2,
+    color: { dark: "#fafaf9", light: "#1c1917" },
+  });
 
   const externalLinks = (event.externalLinks as any[]) || [];
   const dailySchedules = (event.dailySchedules as any[]) || [];
@@ -137,9 +153,33 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         <aside className={styles.sidebar}>
           {event.status !== "COMPLETED" && (
             <div className={`${styles.sideCard} glass-card`}>
-              <h3>Register</h3>
-              <RegisterButton id={id} type="event" isRegistered={isRegistered} isOpen={event.status === "OPEN_FOR_REGISTRATION"} />
-              <p className={styles.sideNote}>Secure your spot for this event.</p>
+              <h3>{isOngoing ? "Attendance" : "Register"}</h3>
+              {/* Only show register button if not ongoing, otherwise we use QR for attendance */}
+              {!isOngoing && (
+                <>
+                  <RegisterButton id={id} type="event" isRegistered={isRegistered} isOpen={event.status === "OPEN_FOR_REGISTRATION"} />
+                  <p className={styles.sideNote}>Secure your spot for this event.</p>
+                </>
+              )}
+
+              {/* QR Code */}
+              <div className={styles.qrDivider} />
+              <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
+              <div className={styles.qrWrap}>
+                <img
+                  src={qrDataUrl}
+                  alt={`QR code for ${event.title}`}
+                  width={180}
+                  height={180}
+                  className={styles.qrImage}
+                  style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }}
+                />
+                <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                <div className={styles.corner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                <div className={styles.corner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+              </div>
+              <p className={styles.sideNote}>{isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}</p>
             </div>
           )}
         </aside>

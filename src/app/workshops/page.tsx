@@ -55,7 +55,7 @@ export default async function WorkshopsPage() {
                   workshop.status === "OPEN_FOR_REGISTRATION" ? "badge-open" :
                   workshop.status === "ONGOING" ? "badge-ongoing" : "badge-completed"
                 }`}>
-                  {workshop.status === "OPEN_FOR_REGISTRATION" && <span className={styles.liveDot} />}
+                  {(workshop.status === "OPEN_FOR_REGISTRATION" || workshop.status === "ONGOING") && <span className={styles.liveDot} />}
                   {STATUS_LABEL[workshop.status]}
                 </span>
               </div>

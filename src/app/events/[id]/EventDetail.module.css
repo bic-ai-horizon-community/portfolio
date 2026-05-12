@@ -213,3 +213,55 @@
   .sectionTitle { font-size: 1rem; }
   .description { font-size: 1rem; }
 }
+
+/* ── QR Code ─────────────────────────────────────── */
+.qrDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 0;
+}
+
+.qrLabel {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.qrWrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.qrImage {
+  width: 180px;
+  height: 180px;
+  border-radius: var(--radius-md);
+  display: block;
+}
+
+/* Animated corner brackets */
+.qrCorner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.qrCorner[data-pos="tl"] { top: 6px; left: 6px; border-top: 2.5px solid var(--primary); border-left: 2.5px solid var(--primary); border-radius: 2px 0 0 0; }
+.qrCorner[data-pos="tr"] { top: 6px; right: 6px; border-top: 2.5px solid var(--primary); border-right: 2.5px solid var(--primary); border-radius: 0 2px 0 0; }
+.qrCorner[data-pos="bl"] { bottom: 6px; left: 6px; border-bottom: 2.5px solid var(--primary); border-left: 2.5px solid var(--primary); border-radius: 0 0 0 2px; }
+.qrCorner[data-pos="br"] { bottom: 6px; right: 6px; border-bottom: 2.5px solid var(--primary); border-right: 2.5px solid var(--primary); border-radius: 0 0 2px 0; }
+
+.qrWrap:hover .qrCorner {
+  width: 22px;
+  height: 22px;
+}
+
