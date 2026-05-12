@@ -37,32 +37,63 @@ export default function QrScanner() {
     );
   };
 
-  const playSuccessSound = async () => {
+  const playSfx = async (type: "scan" | "success" | "error" | "already") => {
     try {
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      if (audioCtx.state === "suspended") {
-        await audioCtx.resume();
-      }
+      if (audioCtx.state === "suspended") await audioCtx.resume();
+      
       const oscillator = audioCtx.createOscillator();
       const gainNode = audioCtx.createGain();
-
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
-      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
-      gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-
       oscillator.connect(gainNode);
       gainNode.connect(audioCtx.destination);
 
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.3);
+      const now = audioCtx.currentTime;
+
+      if (type === "scan") {
+        // Quick high blip
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(1200, now);
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.1, now + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0, now + 0.08);
+        oscillator.start(now);
+        oscillator.stop(now + 0.1);
+      } else if (type === "success") {
+        // Pleasant rising tone
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(880, now);
+        oscillator.frequency.exponentialRampToValueAtTime(1320, now + 0.2);
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+        gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
+        oscillator.start(now);
+        oscillator.stop(now + 0.4);
+      } else if (type === "already") {
+        // Neutral mid tone
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(660, now);
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.05);
+        gainNode.gain.linearRampToValueAtTime(0, now + 0.25);
+        oscillator.start(now);
+        oscillator.stop(now + 0.3);
+      } else if (type === "error") {
+        // Low buzz/thud
+        oscillator.type = "sawtooth";
+        oscillator.frequency.setValueAtTime(150, now);
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.1, now + 0.05);
+        gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+        oscillator.start(now);
+        oscillator.stop(now + 0.3);
+      }
     } catch (e) {
-      console.warn("Sound play failed", e);
+      console.warn("SFX failed", e);
     }
   };
 
   const handleScan = async (url: string) => {
+    await playSfx("scan");
     setStatus("processing");
     try {
       // Handle both /register/event/<id>, /attendance/event/<id>, and workshop equivalents
@@ -90,27 +121,30 @@ export default function QrScanner() {
       const data = await res.json();
 
       if (res.status === 201) {
-        await playSuccessSound();
+        await playSfx("success");
         setStatus("success");
         setMessage(isAttendance
           ? `Attendance marked for "${data.eventTitle}"!`
           : `You're registered for "${data.eventTitle}"!`
         );
       } else if (res.status === 200 && (data.alreadyRegistered || data.alreadyMarked)) {
-        await playSuccessSound();
+        await playSfx("already");
         setStatus("already");
         setMessage(isAttendance
           ? "Your attendance is already marked."
           : "You're already registered for this item."
         );
       } else if (res.status === 401) {
+        await playSfx("error");
         setStatus("error");
         setMessage(`Please sign in first to ${isAttendance ? "mark attendance" : "register"}.`);
       } else {
+        await playSfx("error");
         setStatus("error");
         setMessage(data.message || "Action failed. Please try again.");
       }
     } catch {
+      await playSfx("error");
       setStatus("error");
       setMessage("Something went wrong. Please try again.");
     }
