@@ -16,6 +16,8 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
+  const user = session?.user as any;
+  const isAdmin = user?.role === "ADMIN";
 
   const event = await prisma.event.findUnique({
     where: { id },
@@ -27,7 +29,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   let isRegistered = false;
   if (session) {
     const reg = await prisma.registration.findUnique({
-      where: { userId_eventId: { userId: (session.user as any).id, eventId: id } },
+      where: { userId_eventId: { userId: user.id, eventId: id } },
     });
     isRegistered = !!reg;
   }
@@ -151,7 +153,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <aside className={styles.sidebar}>
-          {event.status !== "COMPLETED" && (
+          {event.status !== "COMPLETED" && (!isOngoing || event.showQr || isAdmin) && (
             <div className={`${styles.sideCard} glass-card`}>
               <h3>{isOngoing ? "Attendance" : "Register"}</h3>
               {/* Only show register button if not ongoing, otherwise we use QR for attendance */}
@@ -163,23 +165,30 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               )}
 
               {/* QR Code */}
-              <div className={styles.qrDivider} />
-              <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
-              <div className={styles.qrWrap}>
-                <img
-                  src={qrDataUrl}
-                  alt={`QR code for ${event.title}`}
-                  width={180}
-                  height={180}
-                  className={styles.qrImage}
-                  style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }}
-                />
-                <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                <div className={styles.corner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                <div className={styles.corner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-              </div>
-              <p className={styles.sideNote}>{isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}</p>
+              {(event.showQr || isAdmin) && (
+                <>
+                  <div className={styles.qrDivider} />
+                  <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
+                  <div className={styles.qrWrap} style={{ opacity: !event.showQr && isAdmin ? 0.6 : 1 }}>
+                    <img
+                      src={qrDataUrl}
+                      alt={`QR code for ${event.title}`}
+                      width={180}
+                      height={180}
+                      className={styles.qrImage}
+                      style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }}
+                    />
+                    <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.corner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.corner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                  </div>
+                  <p className={styles.sideNote}>
+                    {isAdmin && !event.showQr && <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '0.25rem' }}>HIDDEN FROM PUBLIC</strong>}
+                    {isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}
+                  </p>
+                </>
+              )}
             </div>
           )}
         </aside>

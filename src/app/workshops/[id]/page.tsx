@@ -16,6 +16,8 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function WorkshopDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
+  const user = session?.user as any;
+  const isAdmin = user?.role === "ADMIN";
 
   const workshop = await prisma.workshop.findUnique({
     where: { id },
@@ -27,7 +29,7 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
   let isRegistered = false;
   if (session) {
     const reg = await prisma.registration.findUnique({
-      where: { userId_workshopId: { userId: (session.user as any).id, workshopId: id } },
+      where: { userId_workshopId: { userId: user.id, workshopId: id } },
     });
     isRegistered = !!reg;
   }
@@ -156,7 +158,7 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
         </div>
 
         <aside className={styles.sidebar}>
-          {workshop.status !== "COMPLETED" && (
+          {workshop.status !== "COMPLETED" && (!isOngoing || workshop.showQr || isAdmin) && (
             <div className={`${styles.sideCard} glass-card`}>
               <h3>{isOngoing ? "Attendance" : "Enroll"}</h3>
               {!isOngoing && (
@@ -164,23 +166,30 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
               )}
 
               {/* QR Code */}
-              <div className={styles.qrDivider} />
-              <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
-              <div className={styles.qrWrap}>
-                <img
-                  src={qrDataUrl}
-                  alt={`QR code for ${workshop.title}`}
-                  width={180}
-                  height={180}
-                  className={styles.qrImage}
-                  style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }}
-                />
-                <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                <div className={styles.corner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                <div className={styles.corner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-              </div>
-              <p className={styles.sideNote}>{isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}</p>
+              {(workshop.showQr || isAdmin) && (
+                <>
+                  <div className={styles.qrDivider} />
+                  <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
+                  <div className={styles.qrWrap} style={{ opacity: !workshop.showQr && isAdmin ? 0.6 : 1 }}>
+                    <img
+                      src={qrDataUrl}
+                      alt={`QR code for ${workshop.title}`}
+                      width={180}
+                      height={180}
+                      className={styles.qrImage}
+                      style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }}
+                    />
+                    <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.corner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.corner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                  </div>
+                  <p className={styles.sideNote}>
+                    {isAdmin && !workshop.showQr && <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '0.25rem' }}>HIDDEN FROM PUBLIC</strong>}
+                    {isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}
+                  </p>
+                </>
+              )}
             </div>
           )}
         </aside>

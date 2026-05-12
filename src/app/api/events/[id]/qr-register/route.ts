@@ -39,6 +39,13 @@ export async function POST(
       );
     }
 
+    if (!item.showQr) {
+      return NextResponse.json(
+        { message: `QR registration is currently disabled for this ${type}` },
+        { status: 403 }
+      );
+    }
+
     const whereClause = type === "workshop"
       ? { userId_workshopId: { userId, workshopId: id } }
       : { userId_eventId: { userId, eventId: id } };

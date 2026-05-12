@@ -49,3 +49,13 @@ npm run dev
 - **Registration:** Role-based registration with business rules.
 - **Attendance:** Verification by Admins during ONGOING status.
 - **Media Gallery:** Image and video support via Cloudinary.
+
+
+
+   1     # This updates your database tables
+   2     npx prisma db push
+   3
+   4     # This updates the code libraries to recognize 'showQr'
+   5     npx prisma generate
+   3. Restart your dev server:
+   1     npm run dev

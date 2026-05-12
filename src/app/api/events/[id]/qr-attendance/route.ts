@@ -39,6 +39,13 @@ export async function POST(
       );
     }
 
+    if (!item.showQr) {
+      return NextResponse.json(
+        { message: `QR attendance is currently disabled for this ${type}` },
+        { status: 403 }
+      );
+    }
+
     const registrationWhereClause = type === "workshop"
       ? { userId, workshopId: id }
       : { userId, eventId: id };
