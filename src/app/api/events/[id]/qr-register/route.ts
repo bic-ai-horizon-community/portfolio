@@ -16,42 +16,59 @@ export async function POST(
       );
     }
 
-    const { id: eventId } = await params;
+    const { id } = await params;
     const userId = (session.user as any).id;
+    const url = new URL(_req.url);
+    const type = url.searchParams.get("type") || "event";
 
-    const event = await prisma.event.findUnique({ where: { id: eventId } });
-
-    if (!event) {
-      return NextResponse.json({ message: "Event not found" }, { status: 404 });
+    let item;
+    if (type === "workshop") {
+      item = await prisma.workshop.findUnique({ where: { id } });
+    } else {
+      item = await prisma.event.findUnique({ where: { id } });
     }
 
-    if (event.status !== "OPEN_FOR_REGISTRATION") {
+    if (!item) {
+      return NextResponse.json({ message: `${type === 'workshop' ? 'Workshop' : 'Event'} not found` }, { status: 404 });
+    }
+
+    if (item.status !== "OPEN_FOR_REGISTRATION") {
       return NextResponse.json(
-        { message: "Registration is closed for this event" },
+        { message: `Registration is closed for this ${type}` },
         { status: 400 }
       );
     }
 
+    const whereClause = type === "workshop"
+      ? { userId_workshopId: { userId, workshopId: id } }
+      : { userId_eventId: { userId, eventId: id } };
+
     const existing = await prisma.registration.findUnique({
-      where: { userId_eventId: { userId, eventId } },
+      where: whereClause as any,
     });
 
     if (existing) {
       return NextResponse.json(
-        { message: "You are already registered for this event", alreadyRegistered: true },
+        { message: `You are already registered for this ${type}`, alreadyRegistered: true },
         { status: 200 }
       );
     }
 
     const registration = await prisma.registration.create({
-      data: { userId, eventId, status: "REGISTERED" },
+      data: { 
+        userId, 
+        eventId: type === "event" ? id : null,
+        workshopId: type === "workshop" ? id : null,
+        status: "REGISTERED" 
+      },
     });
 
     return NextResponse.json(
-      { success: true, registration, eventTitle: event.title },
+      { success: true, registration, eventTitle: item.title },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error("QR Register Error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

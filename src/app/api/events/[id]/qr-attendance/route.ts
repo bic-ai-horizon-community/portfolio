@@ -49,7 +49,7 @@ export async function POST(
 
     if (!registration) {
       return NextResponse.json(
-        { message: "You must be registered for this event to mark attendance" },
+        { message: `You must be registered for this ${type} to mark attendance` },
         { status: 403 }
       );
     }
