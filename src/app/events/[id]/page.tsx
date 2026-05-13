@@ -7,6 +7,7 @@ import { RegisterButton } from "@/components/events/RegisterButton";
 import { ExternalLinkIcon, CalendarIcon, ClockIcon } from "@/components/icons";
 import QRCode from "qrcode";
 import styles from "./EventDetail.module.css";
+import { getQrAccess } from "@/lib/qr-access";
 
 const STATUS_LABEL: Record<string, string> = {
   OPEN_FOR_REGISTRATION: "Open for Registration",
@@ -42,6 +43,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const baseUrl = host ? `${protocol}://${host}` : (process.env.NEXTAUTH_URL || "http://localhost:3000");
 
   const isOngoing = event.status === "ONGOING";
+  const qrAccess = getQrAccess({
+    showQr: event.showQr,
+    qrVisibility: event.qrVisibility,
+    isAdmin,
+  });
   
   // The URL encoded in the QR code will tell the scanner what to do
   const qrUrl = isOngoing 
@@ -158,7 +164,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <aside className={styles.sidebar}>
-          {event.status !== "COMPLETED" && (!isOngoing || event.showQr || isAdmin) && (
+          {event.status !== "COMPLETED" && (!isOngoing || qrAccess.canUseQr || isAdmin) && (
             <div className={`${styles.sideCard} glass-card`}>
               <h3>{isOngoing ? "Attendance" : "Register"}</h3>
               {/* Only show register button if not ongoing, otherwise we use QR for attendance */}
@@ -170,11 +176,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               )}
 
               {/* QR Code */}
-              {(event.showQr || isAdmin) && (
+              {qrAccess.canSeeQr && (
                 <>
                   <div className={styles.qrDivider} />
                   <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
-                  <div className={styles.qrWrap} style={{ opacity: !event.showQr && isAdmin ? 0.6 : 1 }}>
+                  <div className={styles.qrWrap} style={{ opacity: qrAccess.isAdminPreviewOnly ? 0.6 : 1 }}>
                     <img
                       src={qrDataUrl}
                       alt={`QR code for ${event.title}`}
@@ -185,11 +191,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                     />
                     <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
                     <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.corner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.corner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.qrCorner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.qrCorner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
                   </div>
                   <p className={styles.sideNote}>
-                    {isAdmin && !event.showQr && <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '0.25rem' }}>HIDDEN FROM PUBLIC</strong>}
+                    {isAdmin && <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '0.25rem' }}>{qrAccess.adminStateLabel}</strong>}
                     {isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}
                   </p>
                 </>

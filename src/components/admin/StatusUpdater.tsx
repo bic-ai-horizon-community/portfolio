@@ -2,13 +2,41 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./StatusUpdater.module.css";
 
-export const StatusUpdater = ({ id, type, currentStatus }: { id: string, type: "event" | "workshop", currentStatus: string }) => {
+const STATUS_LABELS: Record<string, string> = {
+  OPEN_FOR_REGISTRATION: "Open for registration",
+  ONGOING: "Live now",
+  COMPLETED: "Completed",
+};
+
+const STATUS_HINTS: Record<string, string> = {
+  OPEN_FOR_REGISTRATION: "Registration is open.",
+  ONGOING: "Attendance is live.",
+  COMPLETED: "This item is locked.",
+};
+
+const STATUS_OPTIONS = [
+  { value: "OPEN_FOR_REGISTRATION", label: "Open" },
+  { value: "ONGOING", label: "Live" },
+  { value: "COMPLETED", label: "Done" },
+] as const;
+
+export const StatusUpdater = ({
+  id,
+  type,
+  currentStatus,
+}: {
+  id: string;
+  type: "event" | "workshop";
+  currentStatus: string;
+}) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleStatusChange = async (newStatus: string) => {
     setLoading(true);
+
     try {
       const res = await fetch(`/api/${type}s/${id}/status`, {
         method: "PATCH",
@@ -16,36 +44,40 @@ export const StatusUpdater = ({ id, type, currentStatus }: { id: string, type: "
         body: JSON.stringify({ status: newStatus }),
       });
 
-      if (!res.ok) throw new Error("Failed to update status");
+      if (!res.ok) {
+        throw new Error("Failed to update status");
+      }
+
       router.refresh();
-    } catch (err) {
-      alert("Error: Command execution failed.");
+    } catch {
+      alert("Failed to update status. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <select 
-      value={currentStatus} 
-      onChange={(e) => handleStatusChange(e.target.value)}
-      disabled={loading}
-      style={{
-        background: "var(--primary)",
-        color: "white",
-        border: "none",
-        padding: "0.6rem 1.25rem",
-        borderRadius: "8px",
-        fontWeight: "700",
-        fontSize: "0.8rem",
-        cursor: "pointer",
-        boxShadow: "0 4px 12px var(--primary-glow)",
-        outline: "none"
-      }}
-    >
-      <option value="OPEN_FOR_REGISTRATION">OPEN FOR REGISTRATION</option>
-      <option value="ONGOING">LIVE (ONGOING)</option>
-      <option value="COMPLETED">COMPLETED</option>
-    </select>
+    <div className={styles.card}>
+      <div className={styles.header}>
+        <p className={styles.eyebrow}>Status</p>
+        <span className={styles.livePill}>{STATUS_LABELS[currentStatus] ?? currentStatus}</span>
+      </div>
+
+      <p className={styles.hint}>{STATUS_HINTS[currentStatus] ?? "Choose the current lifecycle state."}</p>
+
+      <div className={styles.options}>
+        {STATUS_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            disabled={loading || currentStatus === option.value}
+            onClick={() => handleStatusChange(option.value)}
+            className={`${styles.optionBtn} ${currentStatus === option.value ? styles.optionActive : ""}`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 };

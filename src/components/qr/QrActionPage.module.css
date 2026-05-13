@@ -1,0 +1,233 @@
+.page {
+  position: relative;
+  min-height: calc(100vh - 80px);
+  padding: 2rem 1rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.backdropGlow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top, rgba(249, 115, 22, 0.22), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.12), transparent 28%);
+  pointer-events: none;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 520px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  color: var(--primary);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 1rem 0 0.6rem;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.subtitle {
+  margin: 0 auto;
+  max-width: 32rem;
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.panel {
+  padding: 1.5rem;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(28, 25, 23, 0.92), rgba(17, 14, 12, 0.92)),
+    rgba(28, 25, 23, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.statusBody {
+  min-height: 360px;
+  padding: 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.viewfinderFrame {
+  position: relative;
+  width: min(280px, 78vw);
+  height: min(280px, 78vw);
+  margin-bottom: 2rem;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    #0c0a09;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.corner {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border: 3px solid #fff;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+.corner[data-pos="tl"] {
+  top: 18px;
+  left: 18px;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 10px 0 0 0;
+}
+
+.corner[data-pos="tr"] {
+  top: 18px;
+  right: 18px;
+  border-left: 0;
+  border-bottom: 0;
+  border-radius: 0 10px 0 0;
+}
+
+.corner[data-pos="bl"] {
+  bottom: 18px;
+  left: 18px;
+  border-right: 0;
+  border-top: 0;
+  border-radius: 0 0 0 10px;
+}
+
+.corner[data-pos="br"] {
+  right: 18px;
+  bottom: 18px;
+  border-left: 0;
+  border-top: 0;
+  border-radius: 0 0 10px 0;
+}
+
+.spinner {
+  width: 54px;
+  height: 54px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+}
+
+.statusIcon {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin-bottom: 1.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statusIcon::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0.2;
+  animation: pulse 2s infinite;
+}
+
+.successIcon {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.alreadyIcon {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+.errorIcon {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.statusTitle {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.7rem, 5vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.statusSub {
+  margin: 0;
+  max-width: 26rem;
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.08;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  .panel {
+    padding: 2rem;
+  }
+}

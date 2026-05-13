@@ -10,17 +10,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id, type, showQr } = await req.json();
+    const { id, type, showQr, qrVisibility } = await req.json();
+    const normalizedVisibility = qrVisibility === "PRIVATE" ? "PRIVATE" : "PUBLIC";
 
     if (type === "workshop") {
       await prisma.workshop.update({
         where: { id },
-        data: { showQr },
+        data: { showQr, qrVisibility: normalizedVisibility },
       });
     } else {
       await prisma.event.update({
         where: { id },
-        data: { showQr },
+        data: { showQr, qrVisibility: normalizedVisibility },
       });
     }
 

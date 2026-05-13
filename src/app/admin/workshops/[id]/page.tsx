@@ -50,16 +50,26 @@ export default async function AdminWorkshopDetailPage({
           <p className={styles.breadcrumb}>Admin / Workshops / {id.substring(0, 8)}</p>
           <h1>{workshop.title}</h1>
         </div>
-        <div className={styles.controls} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <AdminDeleteButton id={id} type="workshop" />
-          <Link href={`/admin/workshops/edit/${id}`} className="btn-secondary" style={{ padding: '0.5rem 1rem' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem', display: 'inline-block' }}><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Edit Workshop
-          </Link>
-          {workshop.status !== "COMPLETED" && (
-            <QrToggle id={id} type="workshop" initialShowQr={workshop.showQr} />
-          )}
-          <StatusUpdater id={id} type="workshop" currentStatus={workshop.status} />
+        <div className={styles.headerAside}>
+          <div className={styles.primaryActions}>
+            <AdminDeleteButton id={id} type="workshop" />
+            <Link href={`/admin/workshops/edit/${id}`} className="btn-secondary" style={{ padding: '0.5rem 1rem' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem', display: 'inline-block' }}><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit Workshop
+            </Link>
+          </div>
+
+          <div className={styles.utilityGrid}>
+            {workshop.status !== "COMPLETED" && (
+              <QrToggle
+                id={id}
+                type="workshop"
+                initialShowQr={workshop.showQr}
+                initialQrVisibility={workshop.qrVisibility}
+              />
+            )}
+            <StatusUpdater id={id} type="workshop" currentStatus={workshop.status} />
+          </div>
         </div>
       </header>
 
