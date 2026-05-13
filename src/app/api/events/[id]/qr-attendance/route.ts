@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { getQrFriendlyError } from "@/lib/qr-errors";
 
 export async function POST(
   _req: Request,
@@ -104,6 +105,13 @@ export async function POST(
     );
   } catch (error) {
     console.error("Attendance Error:", error);
+    const friendlyError = getQrFriendlyError(error);
+    if (friendlyError) {
+      return NextResponse.json(
+        { message: friendlyError.message },
+        { status: friendlyError.status }
+      );
+    }
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
