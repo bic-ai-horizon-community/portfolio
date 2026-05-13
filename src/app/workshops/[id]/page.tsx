@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { RegisterButton } from "@/components/events/RegisterButton";
 import { ExternalLinkIcon, CalendarIcon, ClockIcon } from "@/components/icons";
 import QRCode from "qrcode";
@@ -34,8 +35,12 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
     isRegistered = !!reg;
   }
 
-  // Generate QR code pointing to this workshop
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  // Get the current host for QR code generation
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const protocol = host?.includes("localhost") ? "http" : "https";
+  const baseUrl = host ? `${protocol}://${host}` : (process.env.NEXTAUTH_URL || "http://localhost:3000");
+
   const isOngoing = workshop.status === "ONGOING";
   
   const qrUrl = isOngoing 
