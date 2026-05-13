@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./ManualEnrollmentForm.module.css";
 
 interface ManualEnrollmentFormProps {
   eventId?: string;
@@ -32,32 +33,25 @@ export const ManualEnrollmentForm = ({ eventId, workshopId }: ManualEnrollmentFo
 
       setEmail("");
       router.refresh();
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to enroll user";
+      alert(message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleEnroll} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', alignItems: 'center' }}>
+    <form onSubmit={handleEnroll} className={styles.form}>
       <input
         type="email"
         placeholder="User Email to Enroll..."
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        style={{
-          padding: '0.5rem 1rem',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--border)',
-          background: 'var(--bg-card)',
-          color: 'var(--text-main)',
-          fontSize: '0.875rem',
-          minWidth: '250px'
-        }}
+        className={styles.input}
       />
-      <button type="submit" className="btn-primary" disabled={loading} style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
+      <button type="submit" className="btn-primary" disabled={loading}>
         {loading ? "Adding..." : "Add Participant"}
       </button>
     </form>

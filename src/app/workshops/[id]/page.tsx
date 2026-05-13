@@ -61,6 +61,7 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
 
   const externalLinks = (workshop.externalLinks as any[]) || [];
   const dailySchedules = (workshop.dailySchedules as any[]) || [];
+  const canShowSidebar = workshop.status !== "COMPLETED" && (!isOngoing || qrAccess.canSeeQr);
 
   return (
     <div className={styles.container}>
@@ -169,7 +170,7 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
         </div>
 
         <aside className={styles.sidebar}>
-          {workshop.status !== "COMPLETED" && (!isOngoing || qrAccess.canUseQr || isAdmin) && (
+          {canShowSidebar && (
             <div className={`${styles.sideCard} glass-card`}>
               <h3>{isOngoing ? "Attendance" : "Enroll"}</h3>
               {!isOngoing && (
@@ -192,8 +193,8 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
                     />
                     <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
                     <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.corner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.corner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.qrCorner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
+                    <div className={styles.qrCorner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
                   </div>
                   <p className={styles.sideNote}>
                     {isAdmin && <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '0.25rem' }}>{qrAccess.adminStateLabel}</strong>}

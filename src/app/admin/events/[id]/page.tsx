@@ -15,8 +15,10 @@ import Link from "next/link";
 
 export default async function AdminEventDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ users?: string }>;
 }) {
   const session = await getServerSession(authOptions);
 
@@ -25,10 +27,21 @@ export default async function AdminEventDetailPage({
   }
 
   const { id } = await params;
+  const userQuery = ((await searchParams).users || "").trim();
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
       registrations: {
+        where: userQuery
+          ? {
+              user: {
+                OR: [
+                  { name: { contains: userQuery, mode: "insensitive" } },
+                  { email: { contains: userQuery, mode: "insensitive" } },
+                ],
+              },
+            }
+          : undefined,
         include: { user: true },
         orderBy: { createdAt: "desc" },
       },
@@ -90,7 +103,19 @@ export default async function AdminEventDetailPage({
             <div className={styles.sectionHeader}>
               <h2>Registered Users</h2>
             </div>
-            <ManualEnrollmentForm eventId={id} />
+            <div className={styles.sectionToolbar}>
+              <ManualEnrollmentForm eventId={id} />
+              <form className={styles.sectionSearch}>
+                <input
+                  type="search"
+                  name="users"
+                  defaultValue={userQuery}
+                  placeholder="Search registered users..."
+                  className={styles.searchInput}
+                />
+                <button type="submit" className="btn-secondary">Search</button>
+              </form>
+            </div>
             <div className={`${styles.tableWrapper} glass-card`}>
               <table className={styles.table}>
                 <thead>
@@ -132,7 +157,7 @@ export default async function AdminEventDetailPage({
                   ))}
                 </tbody>
               </table>
-              {event.registrations.length === 0 && <p className={styles.noData}>No users registered yet.</p>}
+              {event.registrations.length === 0 && <p className={styles.noData}>{userQuery ? "No matching users found." : "No users registered yet."}</p>}
             </div>
           </section>
         </div>

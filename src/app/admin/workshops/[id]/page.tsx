@@ -15,8 +15,10 @@ import Link from "next/link";
 
 export default async function AdminWorkshopDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ users?: string }>;
 }) {
   const session = await getServerSession(authOptions);
 
@@ -25,10 +27,21 @@ export default async function AdminWorkshopDetailPage({
   }
 
   const { id } = await params;
+  const userQuery = ((await searchParams).users || "").trim();
   const workshop = await prisma.workshop.findUnique({
     where: { id },
     include: {
       registrations: {
+        where: userQuery
+          ? {
+              user: {
+                OR: [
+                  { name: { contains: userQuery, mode: "insensitive" } },
+                  { email: { contains: userQuery, mode: "insensitive" } },
+                ],
+              },
+            }
+          : undefined,
         include: { user: true },
         orderBy: { createdAt: "desc" },
       },
@@ -90,7 +103,19 @@ export default async function AdminWorkshopDetailPage({
             <div className={styles.sectionHeader}>
               <h2>Enrollment List</h2>
             </div>
-            <ManualEnrollmentForm workshopId={id} />
+            <div className={styles.sectionToolbar}>
+              <ManualEnrollmentForm workshopId={id} />
+              <form className={styles.sectionSearch}>
+                <input
+                  type="search"
+                  name="users"
+                  defaultValue={userQuery}
+                  placeholder="Search enrolled users..."
+                  className={styles.searchInput}
+                />
+                <button type="submit" className="btn-secondary">Search</button>
+              </form>
+            </div>
             <div className={`${styles.tableWrapper} glass-card`}>
               <table className={styles.table}>
                 <thead>
@@ -132,7 +157,7 @@ export default async function AdminWorkshopDetailPage({
                   ))}
                 </tbody>
               </table>
-              {workshop.registrations.length === 0 && <p className={styles.noData}>No enrollments yet.</p>}
+              {workshop.registrations.length === 0 && <p className={styles.noData}>{userQuery ? "No matching enrollments found." : "No enrollments yet."}</p>}
             </div>
           </section>
         </div>

@@ -9,6 +9,29 @@
   color: var(--text-main);
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.searchForm {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.searchInput {
+  min-width: 260px;
+  padding: 0.8rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -63,3 +86,13 @@
 .roleBadge[data-role="ADMIN"] { background: rgba(59, 130, 246, 0.15); color: var(--primary-light); border-color: rgba(59, 130, 246, 0.3); }
 .roleBadge[data-role="MEMBER"] { background: rgba(245, 158, 11, 0.15); color: var(--warning); border-color: rgba(245, 158, 11, 0.3); }
 .roleBadge[data-role="PUBLIC"] { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); border-color: rgba(148, 163, 184, 0.2); }
+
+.empty {
+  margin-top: 1rem;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-muted);
+}

@@ -5,20 +5,47 @@ import { redirect } from "next/navigation";
 import styles from "./AdminUsers.module.css";
 import { RoleToggle } from "@/components/admin/RoleToggle";
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   const session = await getServerSession(authOptions);
 
   if (!session || (session.user as any).role !== "ADMIN") {
     redirect("/");
   }
 
+  const query = ((await searchParams).q || "").trim();
+
   const users = await prisma.user.findMany({
+    where: query
+      ? {
+          OR: [
+            { name: { contains: query, mode: "insensitive" } },
+            { email: { contains: query, mode: "insensitive" } },
+          ],
+        }
+      : undefined,
     orderBy: { createdAt: "desc" },
   });
 
   return (
     <div className={styles.page}>
-      <h1>Manage Users</h1>
+      <div className={styles.header}>
+        <h1>Manage Users</h1>
+        <form className={styles.searchForm}>
+          <input
+            type="search"
+            name="q"
+            defaultValue={query}
+            placeholder="Search users..."
+            className={styles.searchInput}
+          />
+          <button type="submit" className="btn-secondary">Search</button>
+        </form>
+      </div>
+
       <table className={styles.table}>
         <thead>
           <tr>
@@ -47,6 +74,7 @@ export default async function AdminUsersPage() {
           ))}
         </tbody>
       </table>
+      {users.length === 0 && <div className={styles.empty}>{query ? "No matching users found." : "No users found."}</div>}
     </div>
   );
 }

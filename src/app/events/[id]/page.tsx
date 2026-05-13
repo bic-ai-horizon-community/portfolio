@@ -62,6 +62,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
   const externalLinks = (event.externalLinks as any[]) || [];
   const dailySchedules = (event.dailySchedules as any[]) || [];
+  const canShowSidebar = event.status !== "COMPLETED" && (!isOngoing || qrAccess.canSeeQr);
 
   return (
     <div className={styles.container}>
@@ -164,7 +165,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <aside className={styles.sidebar}>
-          {event.status !== "COMPLETED" && (!isOngoing || qrAccess.canUseQr || isAdmin) && (
+          {canShowSidebar && (
             <div className={`${styles.sideCard} glass-card`}>
               <h3>{isOngoing ? "Attendance" : "Register"}</h3>
               {/* Only show register button if not ongoing, otherwise we use QR for attendance */}

@@ -5,14 +5,29 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import styles from "./AdminWorkshops.module.css";
 
-export default async function AdminWorkshopsPage() {
+export default async function AdminWorkshopsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   const session = await getServerSession(authOptions);
 
   if (!session || (session.user as any).role !== "ADMIN") {
     redirect("/");
   }
 
+  const query = ((await searchParams).q || "").trim();
+
   const workshops = await prisma.workshop.findMany({
+    where: query
+      ? {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { description: { contains: query, mode: "insensitive" } },
+            { speakers: { contains: query, mode: "insensitive" } },
+          ],
+        }
+      : undefined,
     orderBy: { startDate: "desc" },
     include: {
       _count: {
@@ -25,9 +40,21 @@ export default async function AdminWorkshopsPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className="section-title">Workshop Management</h1>
-        <Link href="/admin/workshops/new" className="btn-primary">
-          + Create Workshop
-        </Link>
+        <div className={styles.headerActions}>
+          <form className={styles.searchForm}>
+            <input
+              type="search"
+              name="q"
+              defaultValue={query}
+              placeholder="Search workshops..."
+              className={styles.searchInput}
+            />
+            <button type="submit" className="btn-secondary">Search</button>
+          </form>
+          <Link href="/admin/workshops/new" className="btn-primary">
+            + Create Workshop
+          </Link>
+        </div>
       </div>
 
       <div className={`${styles.tableWrapper} glass-card`}>
@@ -66,7 +93,7 @@ export default async function AdminWorkshopsPage() {
             ))}
           </tbody>
         </table>
-        {workshops.length === 0 && <div className={styles.empty}>No workshops initialized.</div>}
+        {workshops.length === 0 && <div className={styles.empty}>{query ? "No matching workshops found." : "No workshops initialized."}</div>}
       </div>
     </div>
   );
