@@ -15,30 +15,30 @@ interface QrActionPageProps {
 
 const CONTENT = {
   register: {
-    badge: "QR Registration",
-    intro: "We are confirming your seat from the QR you just opened.",
+    sheetTitle: "Scan QR Code",
+    sheetSub: "Point at an event QR to register",
     loadingTitle: "Registering you…",
-    loadingCopy: "Please wait while we secure your spot.",
+    loadingCopy: "Please wait a moment",
     successTitle: "Registered!",
     successMessage: (title: string) => `You have successfully registered for "${title}"!`,
     alreadyTitle: "Already Registered",
     alreadyMessage: "You are already registered for this item.",
-    errorTitle: "Registration Failed",
+    errorTitle: "Oops!",
     unauthenticatedMessage: "Please sign in to complete QR registration.",
     apiPath: (id: string, type: string) => `/api/events/${id}/qr-register?type=${type}`,
     successFlag: 201,
     alreadyFlag: "alreadyRegistered",
   },
   attendance: {
-    badge: "QR Attendance",
-    intro: "We are verifying your attendance from the QR you just opened.",
+    sheetTitle: "Scan QR Code",
+    sheetSub: "Point at a live event QR to mark attendance",
     loadingTitle: "Marking attendance…",
-    loadingCopy: "Please wait while we record your presence.",
-    successTitle: "Attendance Marked!",
+    loadingCopy: "Please wait a moment",
+    successTitle: "Marked!",
     successMessage: (title: string) => `Attendance marked successfully for "${title}"!`,
-    alreadyTitle: "Already Recorded",
+    alreadyTitle: "Already Marked",
     alreadyMessage: "Your attendance is already marked.",
-    errorTitle: "Attendance Failed",
+    errorTitle: "Oops!",
     unauthenticatedMessage: "Please sign in to mark attendance from this QR.",
     apiPath: (id: string, type: string) => `/api/events/${id}/qr-attendance?type=${type}`,
     successFlag: 201,
@@ -92,31 +92,18 @@ export default function QrActionPage({ params, mode }: QrActionPageProps) {
     runAction();
   }, [content, id, router, sessionStatus, type]);
 
-  const title =
-    status === "loading"
-      ? content.loadingTitle
-      : status === "success"
-        ? content.successTitle
-        : status === "already"
-          ? content.alreadyTitle
-          : content.errorTitle;
-
-  const subText =
-    status === "loading"
-      ? content.loadingCopy
-      : message;
-
   return (
     <div className={styles.page}>
-      <div className={styles.backdropGlow} />
       <div className={styles.shell}>
-        <div className={styles.header}>
-          <span className={styles.badge}>{content.badge}</span>
-          <h1 className={styles.title}>{title}</h1>
-          <p className={styles.subtitle}>{status === "loading" ? content.intro : subText}</p>
-        </div>
-
         <div className={`${styles.panel} glass-card`}>
+          <div className={styles.handle} />
+          <div className={styles.sheetHeader}>
+            <div>
+              <h1 className={styles.sheetTitle}>{content.sheetTitle}</h1>
+              <p className={styles.sheetSub}>{content.sheetSub}</p>
+            </div>
+          </div>
+
           {status === "loading" && (
             <div className={styles.statusBody}>
               <div className={styles.viewfinderFrame}>

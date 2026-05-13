@@ -1,75 +1,59 @@
 .page {
   position: relative;
   min-height: calc(100vh - 80px);
-  padding: 2rem 1rem 3rem;
+  padding: 1.5rem 1rem 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
-.backdropGlow {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top, rgba(249, 115, 22, 0.22), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.12), transparent 28%);
-  pointer-events: none;
-}
-
 .shell {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 520px;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 1.25rem;
-}
-
-.badge {
-  display: inline-flex;
-  padding: 0.45rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(249, 115, 22, 0.12);
-  border: 1px solid rgba(249, 115, 22, 0.2);
-  color: var(--primary);
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.title {
-  margin: 1rem 0 0.6rem;
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.subtitle {
-  margin: 0 auto;
-  max-width: 32rem;
-  color: var(--text-muted);
-  font-size: 1rem;
-  line-height: 1.6;
+  max-width: 460px;
 }
 
 .panel {
-  padding: 1.5rem;
-  border-radius: 28px;
-  background:
-    linear-gradient(180deg, rgba(28, 25, 23, 0.92), rgba(17, 14, 12, 0.92)),
-    rgba(28, 25, 23, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  padding: 0 1.25rem 1.5rem;
+  border-radius: 32px;
+  background: rgba(28, 25, 23, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+}
+
+.handle {
+  width: 40px;
+  height: 5px;
+  margin: 12px auto 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.sheetHeader {
+  padding: 1.6rem 0 0.8rem;
+}
+
+.sheetTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to bottom, #fff, #a8a29e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sheetSub {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
 }
 
 .statusBody {
-  min-height: 360px;
-  padding: 1rem 0.5rem;
+  min-height: 320px;
+  padding: 0.75rem 0.5rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -79,10 +63,10 @@
 
 .viewfinderFrame {
   position: relative;
-  width: min(280px, 78vw);
-  height: min(280px, 78vw);
-  margin-bottom: 2rem;
-  border-radius: 32px;
+  width: min(280px, 75vw);
+  height: min(280px, 75vw);
+  margin-bottom: 1.75rem;
+  border-radius: 30px;
   background:
     radial-gradient(circle at center, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
     #0c0a09;
@@ -146,7 +130,7 @@
   position: relative;
   width: 96px;
   height: 96px;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -180,7 +164,7 @@
 
 .statusTitle {
   margin: 0 0 0.75rem;
-  font-size: clamp(1.7rem, 5vw, 2.2rem);
+  font-size: clamp(1.6rem, 5vw, 2rem);
   font-weight: 900;
   letter-spacing: -0.03em;
 }
@@ -197,6 +181,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
+  padding-top: 0.25rem;
 }
 
 @keyframes spin {
@@ -224,10 +209,6 @@
 
 @media (min-width: 768px) {
   .page {
-    padding: 3rem 1.5rem 4rem;
-  }
-
-  .panel {
-    padding: 2rem;
+    padding: 2.5rem 1.5rem 4rem;
   }
 }
