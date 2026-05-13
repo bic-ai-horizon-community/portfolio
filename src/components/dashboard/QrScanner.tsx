@@ -1,16 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./QrScanner.module.css";
 
 type ScanStatus = "idle" | "scanning" | "processing" | "success" | "error" | "already";
 
-export default function QrScanner() {
+interface QrScannerProps {
+  redirectUrl?: string;
+  redirectMode?: "register" | "attendance";
+  hideFab?: boolean;
+}
+
+export default function QrScanner({
+  redirectUrl,
+  redirectMode,
+  hideFab = false,
+}: QrScannerProps) {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<ScanStatus>("idle");
   const [message, setMessage] = useState("");
   const [isAttendanceScan, setIsAttendanceScan] = useState(false);
   const scannerRef = useRef<any>(null);
+  const router = useRouter();
+  const isRedirectFlow = !!redirectUrl;
 
   const stopScanner = async () => {
     if (scannerRef.current) {
@@ -164,11 +177,21 @@ export default function QrScanner() {
     setStatus("idle");
     setMessage("");
     document.body.style.overflow = "";
+    if (isRedirectFlow) {
+      router.push("/dashboard");
+    }
   };
 
   const handleRetry = () => {
-    setStatus("scanning");
+    setStatus(isRedirectFlow ? "processing" : "scanning");
     setMessage("");
+    if (!isRedirectFlow) {
+      return;
+    }
+
+    if (redirectUrl) {
+      void handleScan(redirectUrl);
+    }
   };
 
   useEffect(() => {
@@ -178,11 +201,24 @@ export default function QrScanner() {
     }
   }, [open, status]);
 
+  useEffect(() => {
+    if (!redirectUrl) {
+      return;
+    }
+
+    setOpen(true);
+    setStatus("processing");
+    setIsAttendanceScan(redirectMode === "attendance");
+    document.body.style.overflow = "hidden";
+    void handleScan(redirectUrl);
+  }, [redirectMode, redirectUrl]);
+
   useEffect(() => () => { stopScanner(); document.body.style.overflow = ""; }, []);
 
   return (
     <>
       {/* ── Mobile-only: Docked QR Button ────────────── */}
+      {!hideFab && (
       <div className={styles.fabWrap}>
         <div className={styles.fabContainer}>
           <button className={styles.fab} onClick={handleOpen} id="qr-fab-btn">
@@ -197,6 +233,7 @@ export default function QrScanner() {
           <span className={styles.fabLabel}>Scan QR</span>
         </div>
       </div>
+      )}
 
       {/* ── Slide-up modal sheet ─────────────────────── */}
       {open && (
@@ -209,7 +246,9 @@ export default function QrScanner() {
             <div className={styles.sheetHeader}>
               <div>
                 <h2 className={styles.sheetTitle}>Scan QR Code</h2>
-                <p className={styles.sheetSub}>Point at an event QR to register</p>
+                <p className={styles.sheetSub}>
+                  {isAttendanceScan ? "Point at an event QR to mark attendance" : "Point at an event QR to register"}
+                </p>
               </div>
               <button className={styles.closeBtn} onClick={handleClose} id="qr-modal-close">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -255,8 +294,8 @@ export default function QrScanner() {
                 <p className={styles.statusTitle}>{isAttendanceScan ? "Marked!" : "Registered!"}</p>
                 <p className={styles.statusSub}>{message}</p>
                 <div className={styles.sheetActions}>
-                  <button className="btn-primary" onClick={handleRetry}>Scan Another</button>
-                  <button className="btn-secondary" onClick={handleClose}>Done</button>
+                  <button className="btn-primary" onClick={handleRetry}>{isRedirectFlow ? "Try Again" : "Scan Another"}</button>
+                  <button className="btn-secondary" onClick={handleClose}>{isRedirectFlow ? "Close" : "Done"}</button>
                 </div>
               </div>
             )}
@@ -274,7 +313,7 @@ export default function QrScanner() {
                 <p className={styles.statusTitle}>{isAttendanceScan ? "Already Marked" : "Already Registered"}</p>
                 <p className={styles.statusSub}>{message}</p>
                 <div className={styles.sheetActions}>
-                  <button className="btn-secondary" onClick={handleRetry}>Scan Another</button>
+                  <button className="btn-secondary" onClick={handleRetry}>{isRedirectFlow ? "Try Again" : "Scan Another"}</button>
                   <button className="btn-secondary" onClick={handleClose}>Close</button>
                 </div>
               </div>
