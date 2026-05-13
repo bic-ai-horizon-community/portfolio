@@ -274,6 +274,7 @@ export default function QrScanner({
               </div>
             )}
 
+
             {/* Processing */}
             {status === "processing" && (
               <div className={styles.statusBody}>
