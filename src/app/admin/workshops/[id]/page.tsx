@@ -46,11 +46,11 @@ export default async function AdminWorkshopDetailPage({
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div className={styles.headerTitle}>
-          <p className={styles.breadcrumb}>Admin / Workshops / {id.substring(0, 8)}</p>
-          <h1>{workshop.title}</h1>
-        </div>
-        <div className={styles.headerAside}>
+        <div className={styles.headerTop}>
+          <div className={styles.headerTitle}>
+            <p className={styles.breadcrumb}>Admin / Workshops / {id.substring(0, 8)}</p>
+            <h1>{workshop.title}</h1>
+          </div>
           <div className={styles.primaryActions}>
             <AdminDeleteButton id={id} type="workshop" />
             <Link href={`/admin/workshops/edit/${id}`} className="btn-secondary" style={{ padding: '0.5rem 1rem' }}>
@@ -58,18 +58,18 @@ export default async function AdminWorkshopDetailPage({
               Edit Workshop
             </Link>
           </div>
+        </div>
 
-          <div className={styles.utilityGrid}>
-            {workshop.status !== "COMPLETED" && (
-              <QrToggle
-                id={id}
-                type="workshop"
-                initialShowQr={workshop.showQr}
-                initialQrVisibility={workshop.qrVisibility}
-              />
-            )}
-            <StatusUpdater id={id} type="workshop" currentStatus={workshop.status} />
-          </div>
+        <div className={styles.utilityGrid}>
+          {workshop.status !== "COMPLETED" && (
+            <QrToggle
+              id={id}
+              type="workshop"
+              initialShowQr={workshop.showQr}
+              initialQrVisibility={workshop.qrVisibility}
+            />
+          )}
+          <StatusUpdater id={id} type="workshop" currentStatus={workshop.status} />
         </div>
       </header>
 

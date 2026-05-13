@@ -46,11 +46,11 @@ export default async function AdminEventDetailPage({
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div className={styles.headerTitle}>
-          <p className={styles.breadcrumb}>Admin / Events / {id.substring(0, 8)}</p>
-          <h1>{event.title}</h1>
-        </div>
-        <div className={styles.headerAside}>
+        <div className={styles.headerTop}>
+          <div className={styles.headerTitle}>
+            <p className={styles.breadcrumb}>Admin / Events / {id.substring(0, 8)}</p>
+            <h1>{event.title}</h1>
+          </div>
           <div className={styles.primaryActions}>
             <AdminDeleteButton id={id} type="event" />
             <Link href={`/admin/events/edit/${id}`} className="btn-secondary" style={{ padding: '0.5rem 1rem' }}>
@@ -58,18 +58,18 @@ export default async function AdminEventDetailPage({
               Edit Event
             </Link>
           </div>
+        </div>
 
-          <div className={styles.utilityGrid}>
-            {event.status !== "COMPLETED" && (
-              <QrToggle
-                id={id}
-                type="event"
-                initialShowQr={event.showQr}
-                initialQrVisibility={event.qrVisibility}
-              />
-            )}
-            <StatusUpdater id={id} type="event" currentStatus={event.status} />
-          </div>
+        <div className={styles.utilityGrid}>
+          {event.status !== "COMPLETED" && (
+            <QrToggle
+              id={id}
+              type="event"
+              initialShowQr={event.showQr}
+              initialQrVisibility={event.qrVisibility}
+            />
+          )}
+          <StatusUpdater id={id} type="event" currentStatus={event.status} />
         </div>
       </header>
 
