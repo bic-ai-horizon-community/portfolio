@@ -61,6 +61,9 @@ export const metadata: Metadata = {
       "AI Horizon is the premier student AI community at Biratnagar International College, Nepal. Join workshops, hackathons, events, and hands-on AI projects.",
     creator: "@bic_ai_horizon",
   },
+  verification: {
+    google: "EoSXVM-dKq0hAT5rpygGRlrtr03Io4Wu-U_wpsJ6-IY",
+  },
   alternates: {
     canonical: "/",
   },
