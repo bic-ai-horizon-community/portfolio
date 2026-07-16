@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -14,6 +15,21 @@ const STATUS_LABEL: Record<string, string> = {
   ONGOING: "Live Now",
   COMPLETED: "Completed",
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const workshop = await prisma.workshop.findUnique({
+    where: { id },
+    select: { title: true, description: true },
+  });
+  if (!workshop) return { title: "Workshop Not Found" };
+  return {
+    title: workshop.title,
+    description: workshop.description?.substring(0, 155) || `Details for ${workshop.title} at AI Horizon`,
+    alternates: { canonical: `/workshops/${id}` },
+    openGraph: { type: "article" },
+  };
+}
 
 export default async function WorkshopDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

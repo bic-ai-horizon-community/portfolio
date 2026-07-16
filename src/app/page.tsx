@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { HeroActions, JoinCTA } from "@/components/home/HomeActions";
 import styles from "./Home.module.css";
 import { CalendarIcon, ClockIcon, UserIcon } from "@/components/icons";
@@ -54,6 +55,28 @@ export default async function Home() {
 
   return (
     <div className={styles.page}>
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'AI Horizon',
+        alternateName: 'BIC AI Horizon',
+        url: 'https://aihorizon-omega.vercel.app',
+        logo: 'https://aihorizon-omega.vercel.app/ai-horizon-logo.png',
+        description: 'The premier student AI community at Biratnagar International College, Nepal. Workshops, hackathons, and hands-on AI projects.',
+        sameAs: [
+          'https://www.instagram.com/bic.ai_horizon/',
+          'https://www.linkedin.com/company/bic-ai-horizon/',
+        ],
+        parentOrganization: {
+          '@type': 'EducationalOrganization',
+          name: 'Biratnagar International College',
+          alternateName: 'BIC',
+        },
+        foundingLocation: {
+          '@type': 'Place',
+          name: 'Biratnagar, Nepal',
+        },
+      }} />
       {/* ─── Hero Section ─── */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>

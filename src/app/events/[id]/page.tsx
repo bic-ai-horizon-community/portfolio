@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -14,6 +15,21 @@ const STATUS_LABEL: Record<string, string> = {
   ONGOING: "Live Now",
   COMPLETED: "Completed",
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const event = await prisma.event.findUnique({
+    where: { id },
+    select: { title: true, description: true },
+  });
+  if (!event) return { title: "Event Not Found" };
+  return {
+    title: event.title,
+    description: event.description?.substring(0, 155) || `Details for ${event.title} at AI Horizon`,
+    alternates: { canonical: `/events/${id}` },
+    openGraph: { type: "article" },
+  };
+}
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

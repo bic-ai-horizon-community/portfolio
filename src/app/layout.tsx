@@ -8,10 +8,65 @@ import Link from "next/link";
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "AI Horizon | Student AI Community",
-  description: "The premier student community for mastering Artificial Intelligence — through workshops, events, and hands-on projects.",
+  metadataBase: new URL("https://aihorizon-omega.vercel.app"),
+  title: {
+    template: "%s | AI Horizon",
+    default: "AI Horizon | Student AI Community — BIC Nepal",
+  },
+  description:
+    "AI Horizon is the premier student AI community at Biratnagar International College, Nepal. Join workshops, hackathons, events, and hands-on AI projects.",
+  keywords: [
+    "AI Horizon",
+    "artificial intelligence community",
+    "BIC Nepal",
+    "Biratnagar International College",
+    "student AI club",
+    "AI workshops Nepal",
+    "machine learning community",
+    "AI events",
+    "hackathons Nepal",
+    "deep learning",
+    "AI Horizon BIC",
+    "tech community Nepal",
+  ],
+  authors: [{ name: "AI Horizon", url: "https://aihorizon-omega.vercel.app" }],
+  creator: "AI Horizon — BIC",
+  publisher: "AI Horizon",
+  applicationName: "AI Horizon",
+  referrer: "origin-when-cross-origin" as const,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large" as const,
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://aihorizon-omega.vercel.app",
+    siteName: "AI Horizon",
+    title: "AI Horizon | Student AI Community",
+    description:
+      "AI Horizon is the premier student AI community at Biratnagar International College, Nepal. Join workshops, hackathons, events, and hands-on AI projects.",
+  },
+  twitter: {
+    card: "summary_large_image" as const,
+    title: "AI Horizon | Student AI Community",
+    description:
+      "AI Horizon is the premier student AI community at Biratnagar International College, Nepal. Join workshops, hackathons, events, and hands-on AI projects.",
+    creator: "@bic_ai_horizon",
+  },
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "/ai-horizon-logo.png",
+    apple: "/ai-horizon-logo.png",
   },
 };
 
@@ -51,6 +106,11 @@ export default function RootLayout({
                     <h4>Community</h4>
                     <Link href="/dashboard">Dashboard</Link>
                     <Link href="/login">Sign In</Link>
+                  </div>
+                  <div className="footer-col">
+                    <h4>Connect</h4>
+                    <a href="https://www.instagram.com/bic.ai_horizon/" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://www.linkedin.com/company/bic-ai-horizon/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
                   </div>
                 </div>
               </div>

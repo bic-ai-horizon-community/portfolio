@@ -1,6 +1,14 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import styles from "./Events.module.css";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Events",
+  description:
+    "Explore AI Horizon events — hackathons, talks, networking sessions, and AI competitions at Biratnagar International College, Nepal.",
+  alternates: { canonical: "/events" },
+};
 
 export const revalidate = 60;
 

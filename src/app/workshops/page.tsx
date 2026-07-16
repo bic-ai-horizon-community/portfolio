@@ -2,6 +2,14 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import styles from "./Workshops.module.css";
 import { CalendarIcon } from "@/components/icons";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Workshops",
+  description:
+    "Hands-on AI workshops at AI Horizon — covering machine learning, deep learning, NLP, computer vision, and more at BIC Nepal.",
+  alternates: { canonical: "/workshops" },
+};
 
 export const revalidate = 60;
 
