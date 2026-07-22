@@ -45,11 +45,12 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
   if (!workshop) notFound();
 
   let isRegistered = false;
+  let registration: any = null;
   if (session) {
-    const reg = await prisma.registration.findUnique({
+    registration = await prisma.registration.findUnique({
       where: { userId_workshopId: { userId: user.id, workshopId: id } },
     });
-    isRegistered = !!reg;
+    isRegistered = !!registration;
   }
 
   // Get the current host for QR code generation
@@ -74,6 +75,16 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
     margin: 2,
     color: { dark: "#fafaf9", light: "#1c1917" },
   });
+
+  let userQrDataUrl: string | null = null;
+  if (isRegistered && user) {
+    const userQrContent = `AIHORIZON:WORKSHOP:${id}:USER:${user.id}`;
+    userQrDataUrl = await QRCode.toDataURL(userQrContent, {
+      width: 280,
+      margin: 2,
+      color: { dark: "#fafaf9", light: "#1c1917" },
+    });
+  }
 
   const externalLinks = (workshop.externalLinks as any[]) || [];
   const dailySchedules = (workshop.dailySchedules as any[]) || [];
@@ -189,35 +200,22 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
           {canShowSidebar && (
             <div className={`${styles.sideCard} glass-card`}>
               <h3>{isOngoing ? "Attendance" : "Enroll"}</h3>
-              {!isOngoing && (
-                <RegisterButton id={id} type="workshop" isRegistered={isRegistered} isOpen={workshop.status === "OPEN_FOR_REGISTRATION"} />
-              )}
+              <RegisterButton
+                id={id}
+                type="workshop"
+                isRegistered={isRegistered}
+                registrationStatus={registration?.status || null}
+                initialFormResponses={registration?.formResponses || {}}
+                isOpen={workshop.status === "OPEN_FOR_REGISTRATION"}
+                eventStatus={workshop.status}
+                registrationType={(workshop as any).registrationType || "BUTTON"}
+                formFields={((workshop as any).formFields as any[]) || []}
+                audienceType={(workshop as any).audienceType || "BOTH"}
+                userEmail={user?.email || ""}
+                userQrDataUrl={userQrDataUrl || undefined}
+              />
 
-              {/* QR Code */}
-              {qrAccess.canSeeQr && (
-                <>
-                  <div className={styles.qrDivider} />
-                  <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
-                  <div className={styles.qrWrap} style={{ opacity: qrAccess.isAdminPreviewOnly ? 0.6 : 1 }}>
-                    <img
-                      src={qrDataUrl}
-                      alt={`QR code for ${workshop.title}`}
-                      width={180}
-                      height={180}
-                      className={styles.qrImage}
-                      style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }}
-                    />
-                    <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.qrCorner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.qrCorner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                  </div>
-                  <p className={styles.sideNote}>
-                    {isAdmin && <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '0.25rem' }}>{qrAccess.adminStateLabel}</strong>}
-                    {isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}
-                  </p>
-                </>
-              )}
+
             </div>
           )}
         </aside>

@@ -45,11 +45,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   if (!event) notFound();
 
   let isRegistered = false;
+  let registration: any = null;
   if (session) {
-    const reg = await prisma.registration.findUnique({
+    registration = await prisma.registration.findUnique({
       where: { userId_eventId: { userId: user.id, eventId: id } },
     });
-    isRegistered = !!reg;
+    isRegistered = !!registration;
   }
 
   // Get the current host for QR code generation
@@ -65,7 +66,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     isAdmin,
   });
   
-  // The URL encoded in the QR code will tell the scanner what to do
+  // Event QR code (for scanning by users to register/attend)
   const qrUrl = isOngoing 
     ? `${baseUrl}/attendance/event/${id}` 
     : `${baseUrl}/register/event/${id}`;
@@ -76,9 +77,21 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     color: { dark: "#fafaf9", light: "#1c1917" },
   });
 
+  // Personal user QR code (for admin to scan for attendance)
+  let userQrDataUrl: string | null = null;
+  if (isRegistered && user) {
+    const userQrContent = `AIHORIZON:EVENT:${id}:USER:${user.id}`;
+    userQrDataUrl = await QRCode.toDataURL(userQrContent, {
+      width: 280,
+      margin: 2,
+      color: { dark: "#fafaf9", light: "#1c1917" },
+    });
+  }
+
   const externalLinks = (event.externalLinks as any[]) || [];
   const dailySchedules = (event.dailySchedules as any[]) || [];
-  const canShowSidebar = event.status !== "COMPLETED" && (!isOngoing || qrAccess.canSeeQr);
+  const formFields = (event.formFields as any[]) || [];
+  const canShowSidebar = event.status !== "COMPLETED" || isRegistered;
 
   return (
     <div className={styles.container}>
@@ -183,40 +196,27 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         <aside className={styles.sidebar}>
           {canShowSidebar && (
             <div className={`${styles.sideCard} glass-card`}>
+              {/* Registration / Attendance section */}
               <h3>{isOngoing ? "Attendance" : "Register"}</h3>
-              {/* Only show register button if not ongoing, otherwise we use QR for attendance */}
-              {!isOngoing && (
-                <>
-                  <RegisterButton id={id} type="event" isRegistered={isRegistered} isOpen={event.status === "OPEN_FOR_REGISTRATION"} />
-                  <p className={styles.sideNote}>Secure your spot for this event.</p>
-                </>
+              <RegisterButton
+                id={id}
+                type="event"
+                isRegistered={isRegistered}
+                registrationStatus={registration?.status || null}
+                initialFormResponses={registration?.formResponses || {}}
+                isOpen={event.status === "OPEN_FOR_REGISTRATION"}
+                eventStatus={event.status}
+                registrationType={event.registrationType as "BUTTON" | "FORM"}
+                formFields={formFields}
+                audienceType={event.audienceType as "COLLEGE_ONLY" | "PUBLIC_ONLY" | "BOTH"}
+                userEmail={user?.email || ""}
+                userQrDataUrl={userQrDataUrl || undefined}
+              />
+              {!isRegistered && !isOngoing && event.status !== "COMPLETED" && (
+                <p className={styles.sideNote}>Secure your spot for this event.</p>
               )}
 
-              {/* QR Code */}
-              {qrAccess.canSeeQr && (
-                <>
-                  <div className={styles.qrDivider} />
-                  <p className={styles.qrLabel}>{isOngoing ? "Scan to Mark Presence" : "Scan to Register Instantly"}</p>
-                  <div className={styles.qrWrap} style={{ opacity: qrAccess.isAdminPreviewOnly ? 0.6 : 1 }}>
-                    <img
-                      src={qrDataUrl}
-                      alt={`QR code for ${event.title}`}
-                      width={180}
-                      height={180}
-                      className={styles.qrImage}
-                      style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }}
-                    />
-                    <div className={styles.qrCorner} data-pos="tl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.qrCorner} data-pos="tr" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.qrCorner} data-pos="bl" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                    <div className={styles.qrCorner} data-pos="br" style={{ borderColor: isOngoing ? "var(--success)" : "var(--primary)" }} />
-                  </div>
-                  <p className={styles.sideNote}>
-                    {isAdmin && <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '0.25rem' }}>{qrAccess.adminStateLabel}</strong>}
-                    {isOngoing ? "You must be at the venue to scan" : "Use the QR Scanner on your dashboard"}
-                  </p>
-                </>
-              )}
+
             </div>
           )}
         </aside>

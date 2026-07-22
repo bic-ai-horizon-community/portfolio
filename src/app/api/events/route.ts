@@ -19,6 +19,14 @@ const eventSchema = z.object({
     label: z.string(),
     url: z.string().url(),
   })).optional(),
+  audienceType: z.enum(["COLLEGE_ONLY", "PUBLIC_ONLY", "BOTH"]).optional(),
+  registrationType: z.enum(["BUTTON", "FORM"]).optional(),
+  formFields: z.array(z.object({
+    label: z.string(),
+    type: z.enum(["text", "email", "phone", "textarea", "select", "checkbox", "number"]),
+    required: z.boolean(),
+    options: z.array(z.string()).optional(),
+  })).optional().nullable().transform(val => val === null ? undefined : val),
 });
 
 export async function GET() {
@@ -53,7 +61,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(event, { status: 201 });
-  } catch (error) {
+    } catch (error) {
+    console.error("API POST Error:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ message: "Invalid input", errors: error.issues }, { status: 400 });
     }

@@ -3,14 +3,16 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import styles from "./AdminWorkshopDetail.module.css";
+import { SearchInput } from "@/components/admin/SearchInput";
 import { StatusUpdater } from "@/components/admin/StatusUpdater";
-import { QrToggle } from "@/components/admin/QrToggle";
+
 import { AttendanceMarker } from "@/components/admin/AttendanceMarker";
 import { MediaUpload } from "@/components/admin/MediaUpload";
 import { DeleteMediaButton } from "@/components/admin/DeleteMediaButton";
 import { AdminDeleteButton } from "@/components/admin/AdminDeleteButton";
 import { ManualEnrollmentForm } from "@/components/admin/ManualEnrollmentForm";
 import { RemoveRegistrationButton } from "@/components/admin/RemoveRegistrationButton";
+import { RealtimeRefresher } from "@/components/admin/RealtimeRefresher";
 import Link from "next/link";
 
 export default async function AdminWorkshopDetailPage({
@@ -58,6 +60,7 @@ export default async function AdminWorkshopDetailPage({
 
   return (
     <div className={styles.page}>
+      <RealtimeRefresher intervalMs={3000} />
       <header className={styles.header}>
         <div className={styles.headerTop}>
           <div className={styles.headerTitle}>
@@ -74,14 +77,7 @@ export default async function AdminWorkshopDetailPage({
         </div>
 
         <div className={styles.utilityGrid}>
-          {workshop.status !== "COMPLETED" && (
-            <QrToggle
-              id={id}
-              type="workshop"
-              initialShowQr={workshop.showQr}
-              initialQrVisibility={workshop.qrVisibility}
-            />
-          )}
+
           <StatusUpdater id={id} type="workshop" currentStatus={workshop.status} />
         </div>
       </header>
@@ -105,16 +101,7 @@ export default async function AdminWorkshopDetailPage({
             </div>
             <div className={styles.sectionToolbar}>
               <ManualEnrollmentForm workshopId={id} />
-              <form className={styles.sectionSearch}>
-                <input
-                  type="search"
-                  name="users"
-                  defaultValue={userQuery}
-                  placeholder="Search enrolled users..."
-                  className={styles.searchInput}
-                />
-                <button type="submit" className="btn-secondary">Search</button>
-              </form>
+              <SearchInput placeholder="Search enrolled users..." queryKey="users" />
             </div>
             <div className={`${styles.tableWrapper} glass-card`}>
               <table className={styles.table}>

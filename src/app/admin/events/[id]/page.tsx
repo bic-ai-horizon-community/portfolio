@@ -3,14 +3,16 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import styles from "./AdminEventDetail.module.css";
+import { SearchInput } from "@/components/admin/SearchInput";
 import { StatusUpdater } from "@/components/admin/StatusUpdater";
-import { QrToggle } from "@/components/admin/QrToggle";
+
 import { AttendanceMarker } from "@/components/admin/AttendanceMarker";
 import { MediaUpload } from "@/components/admin/MediaUpload";
 import { DeleteMediaButton } from "@/components/admin/DeleteMediaButton";
 import { AdminDeleteButton } from "@/components/admin/AdminDeleteButton";
 import { ManualEnrollmentForm } from "@/components/admin/ManualEnrollmentForm";
 import { RemoveRegistrationButton } from "@/components/admin/RemoveRegistrationButton";
+import { RealtimeRefresher } from "@/components/admin/RealtimeRefresher";
 import Link from "next/link";
 
 export default async function AdminEventDetailPage({
@@ -56,8 +58,25 @@ export default async function AdminEventDetailPage({
 
   const attendeeIds = new Set(event.attendances.map((a) => a.userId));
 
+  // Build attendance timestamp lookup
+  const attendanceTimestamps = new Map<string, Date>();
+  for (const att of event.attendances) {
+    attendanceTimestamps.set(att.userId, att.timestamp);
+  }
+
+  const audienceLabels: Record<string, string> = {
+    BOTH: "Everyone",
+    COLLEGE_ONLY: "College Only",
+    PUBLIC_ONLY: "General Public",
+  };
+  const regTypeLabels: Record<string, string> = {
+    BUTTON: "Single Button",
+    FORM: "Custom Form",
+  };
+
   return (
     <div className={styles.page}>
+      <RealtimeRefresher intervalMs={3000} />
       <header className={styles.header}>
         <div className={styles.headerTop}>
           <div className={styles.headerTitle}>
@@ -65,6 +84,15 @@ export default async function AdminEventDetailPage({
             <h1>{event.title}</h1>
           </div>
           <div className={styles.primaryActions}>
+            <a
+              href={`/api/admin/events/${id}/export`}
+              className="btn-secondary"
+              style={{ padding: '0.5rem 1rem', textDecoration: 'none' }}
+              download
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem', display: 'inline-block' }}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export Excel
+            </a>
             <AdminDeleteButton id={id} type="event" />
             <Link href={`/admin/events/edit/${id}`} className="btn-secondary" style={{ padding: '0.5rem 1rem' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem', display: 'inline-block' }}><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -74,14 +102,6 @@ export default async function AdminEventDetailPage({
         </div>
 
         <div className={styles.utilityGrid}>
-          {event.status !== "COMPLETED" && (
-            <QrToggle
-              id={id}
-              type="event"
-              initialShowQr={event.showQr}
-              initialQrVisibility={event.qrVisibility}
-            />
-          )}
           <StatusUpdater id={id} type="event" currentStatus={event.status} />
         </div>
       </header>
@@ -95,6 +115,14 @@ export default async function AdminEventDetailPage({
           <h3>Attendees</h3>
           <p>{event.attendances.length}</p>
         </div>
+        <div className={`${styles.statCard} glass-card`}>
+          <h3>Audience</h3>
+          <p style={{ fontSize: '0.9rem' }}>{audienceLabels[event.audienceType] || 'Everyone'}</p>
+        </div>
+        <div className={`${styles.statCard} glass-card`}>
+          <h3>Registration</h3>
+          <p style={{ fontSize: '0.9rem' }}>{regTypeLabels[event.registrationType] || 'Button'}</p>
+        </div>
       </div>
 
       <div className={styles.grid}>
@@ -105,16 +133,7 @@ export default async function AdminEventDetailPage({
             </div>
             <div className={styles.sectionToolbar}>
               <ManualEnrollmentForm eventId={id} />
-              <form className={styles.sectionSearch}>
-                <input
-                  type="search"
-                  name="users"
-                  defaultValue={userQuery}
-                  placeholder="Search registered users..."
-                  className={styles.searchInput}
-                />
-                <button type="submit" className="btn-secondary">Search</button>
-              </form>
+              <SearchInput placeholder="Search registered users..." queryKey="users" />
             </div>
             <div className={`${styles.tableWrapper} glass-card`}>
               <table className={styles.table}>
@@ -123,6 +142,7 @@ export default async function AdminEventDetailPage({
                     <th>User</th>
                     <th>User ID</th>
                     <th>Status</th>
+                    <th>Attendance Time</th>
                     <th>Mark Attendance</th>
                     <th>Actions</th>
                   </tr>
@@ -140,6 +160,18 @@ export default async function AdminEventDetailPage({
                           <span className={styles.attended}>ATTENDED</span>
                         ) : (
                           <span className={styles.registered}>REGISTERED</span>
+                        )}
+                      </td>
+                      <td>
+                        {attendanceTimestamps.has(reg.userId) ? (
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
+                            {new Date(attendanceTimestamps.get(reg.userId)!).toLocaleString('en-US', {
+                              month: 'short', day: 'numeric',
+                              hour: '2-digit', minute: '2-digit', second: '2-digit',
+                            })}
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>—</span>
                         )}
                       </td>
                       <td>

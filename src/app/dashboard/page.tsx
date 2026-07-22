@@ -2,7 +2,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import QRCode from "qrcode";
 import QrScanner from "@/components/dashboard/QrScanner";
+import { DashboardQrButton } from "@/components/dashboard/DashboardQrButton";
 import styles from "./Dashboard.module.css";
 
 export default async function DashboardPage() {
@@ -10,6 +12,7 @@ export default async function DashboardPage() {
   if (!session) redirect("/login");
 
   const userId = (session.user as any).id;
+  const isAdmin = (session.user as any).role === "ADMIN";
 
   const [
     registrations, 
@@ -33,6 +36,21 @@ export default async function DashboardPage() {
 
   const attended = registrations.filter((r) => r.status === "ATTENDED").length;
   const totalRegistrations = registrations.length;
+
+  // Generate QR codes for each registration
+  const registrationQrCodes: Record<string, string> = {};
+  for (const reg of registrations) {
+    const type = reg.eventId ? "EVENT" : "WORKSHOP";
+    const itemId = reg.eventId || reg.workshopId;
+    if (itemId) {
+      const qrContent = `AIHORIZON:${type}:${itemId}:USER:${userId}`;
+      registrationQrCodes[reg.id] = await QRCode.toDataURL(qrContent, {
+        width: 280,
+        margin: 2,
+        color: { dark: "#fafaf9", light: "#1c1917" },
+      });
+    }
+  }
 
   return (
     <>
@@ -115,10 +133,19 @@ export default async function DashboardPage() {
                   <strong>{reg.event?.title || reg.workshop?.title}</strong>
                   <span>{reg.event ? "Event" : "Workshop"}</span>
                 </div>
-                <span className={`badge ${
-                  reg.status === "ATTENDED" ? "badge-open" :
-                  reg.status === "REJECTED" ? styles.badgeDanger : "badge-ongoing"
-                }`}>{reg.status}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  {registrationQrCodes[reg.id] && (
+                    <DashboardQrButton
+                      eventTitle={reg.event?.title || reg.workshop?.title || "Event"}
+                      qrDataUrl={registrationQrCodes[reg.id]}
+                      registrationDate={new Date(reg.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    />
+                  )}
+                  <span className={`badge ${
+                    reg.status === "ATTENDED" ? "badge-open" :
+                    reg.status === "REJECTED" ? styles.badgeDanger : "badge-ongoing"
+                  }`}>{reg.status}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -152,7 +179,7 @@ export default async function DashboardPage() {
         )}
       </div>
       </div>
-      <QrScanner />
+      {isAdmin && <QrScanner isAdmin={true} />}
     </>
   );
 }
