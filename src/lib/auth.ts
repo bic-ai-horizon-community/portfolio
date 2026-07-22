@@ -2,8 +2,6 @@ import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "@/lib/prisma";
 
-const ALLOWED_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN || "bicnepal.edu.np";
-
 export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
@@ -16,11 +14,12 @@ export const authOptions: AuthOptions = {
       if (account?.provider !== "google") return false;
 
       const email = user.email;
-      if (!email || !email.endsWith(ALLOWED_DOMAIN)) {
-        return `/login?error=domain`;
+      if (!email) {
+        return `/login?error=no_email`;
       }
 
       // Upsert user on first Google sign-in
+      // Domain restrictions are now enforced per-event at registration time
       await prisma.user.upsert({
         where: { email },
         update: { name: user.name || "Student" },

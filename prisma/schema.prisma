@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -40,6 +41,17 @@ enum QrVisibility {
   PRIVATE
 }
 
+enum AudienceType {
+  COLLEGE_ONLY
+  PUBLIC_ONLY
+  BOTH
+}
+
+enum RegistrationType {
+  BUTTON
+  FORM
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String
@@ -73,6 +85,9 @@ model Event {
   startTime     String?     // e.g. "09:00"
   endTime       String?     // e.g. "17:00"
   dailySchedules Json?      // Array of { date: string, startTime: string, endTime: string }
+  audienceType   AudienceType    @default(BOTH)
+  registrationType RegistrationType @default(BUTTON)
+  formFields     Json?            // Array of { label, type, required, options? }
   showQr        Boolean     @default(true)
   qrVisibility  QrVisibility @default(PUBLIC)
   createdAt     DateTime    @default(now())
@@ -100,6 +115,9 @@ model Workshop {
   dailySchedules Json?      // Array of { date: string, startTime: string, endTime: string }
   eventType     EventType   @default(ONE_DAY)
   materials     Json?       // Links/notes
+  audienceType   AudienceType    @default(BOTH)
+  registrationType RegistrationType @default(BUTTON)
+  formFields     Json?            // Array of { label, type, required, options? }
   showQr        Boolean     @default(true)
   qrVisibility  QrVisibility @default(PUBLIC)
   status        EventStatus @default(OPEN_FOR_REGISTRATION)

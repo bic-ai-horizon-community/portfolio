@@ -1,4 +1,5 @@
 import styles from "./Admin.module.css";
+import QrScanner from "@/components/dashboard/QrScanner";
 
 export default function AdminLayout({
   children,
@@ -7,6 +8,7 @@ export default function AdminLayout({
 }) {
   return (
     <div className={styles.adminContainer}>
+
       <div className={styles.mobileBlock}>
         <div className={styles.blockContent}>
           <div className={styles.blockIcon}>
@@ -16,12 +18,13 @@ export default function AdminLayout({
             </svg>
           </div>
           <h1>Desktop Access Only</h1>
-          <p>Only access admin panel from your Laptop Device</p>
+          <p>Other Admin Functionalities can be only accessed via Laptop for security reasons</p>
         </div>
       </div>
       <div className={styles.desktopContent}>
         {children}
       </div>
+      <QrScanner isAdmin={true} />
     </div>
   );
 }

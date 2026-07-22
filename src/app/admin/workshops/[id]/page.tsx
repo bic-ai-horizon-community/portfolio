@@ -3,8 +3,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import styles from "./AdminWorkshopDetail.module.css";
+import { SearchInput } from "@/components/admin/SearchInput";
 import { StatusUpdater } from "@/components/admin/StatusUpdater";
-import { QrToggle } from "@/components/admin/QrToggle";
+
 import { AttendanceMarker } from "@/components/admin/AttendanceMarker";
 import { MediaUpload } from "@/components/admin/MediaUpload";
 import { DeleteMediaButton } from "@/components/admin/DeleteMediaButton";
@@ -74,14 +75,7 @@ export default async function AdminWorkshopDetailPage({
         </div>
 
         <div className={styles.utilityGrid}>
-          {workshop.status !== "COMPLETED" && (
-            <QrToggle
-              id={id}
-              type="workshop"
-              initialShowQr={workshop.showQr}
-              initialQrVisibility={workshop.qrVisibility}
-            />
-          )}
+
           <StatusUpdater id={id} type="workshop" currentStatus={workshop.status} />
         </div>
       </header>
@@ -105,16 +99,7 @@ export default async function AdminWorkshopDetailPage({
             </div>
             <div className={styles.sectionToolbar}>
               <ManualEnrollmentForm workshopId={id} />
-              <form className={styles.sectionSearch}>
-                <input
-                  type="search"
-                  name="users"
-                  defaultValue={userQuery}
-                  placeholder="Search enrolled users..."
-                  className={styles.searchInput}
-                />
-                <button type="submit" className="btn-secondary">Search</button>
-              </form>
+              <SearchInput placeholder="Search enrolled users..." queryKey="users" />
             </div>
             <div className={`${styles.tableWrapper} glass-card`}>
               <table className={styles.table}>
