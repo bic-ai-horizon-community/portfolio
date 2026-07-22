@@ -42,9 +42,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (item.status !== "ONGOING") {
+    if (item.status !== "ONGOING" && item.status !== "OPEN_FOR_REGISTRATION") {
       return NextResponse.json(
-        { message: `This ${type} is not currently live. Attendance can only be marked for ongoing ${type}s.` },
+        { message: `This ${type} is not currently active. Attendance can only be marked for ongoing or open ${type}s.` },
         { status: 400 }
       );
     }
