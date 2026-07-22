@@ -26,7 +26,7 @@ const eventSchema = z.object({
     type: z.enum(["text", "email", "phone", "textarea", "select", "checkbox", "number"]),
     required: z.boolean(),
     options: z.array(z.string()).optional(),
-  })).optional().nullable(),
+  })).optional().nullable().transform(val => val === null ? undefined : val),
 });
 
 export async function GET() {
