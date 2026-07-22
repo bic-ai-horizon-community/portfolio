@@ -179,7 +179,7 @@ export default async function DashboardPage() {
         )}
       </div>
       </div>
-      <QrScanner isAdmin={isAdmin} />
+      {isAdmin && <QrScanner isAdmin={true} />}
     </>
   );
 }
