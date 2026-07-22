@@ -12,6 +12,7 @@ import { DeleteMediaButton } from "@/components/admin/DeleteMediaButton";
 import { AdminDeleteButton } from "@/components/admin/AdminDeleteButton";
 import { ManualEnrollmentForm } from "@/components/admin/ManualEnrollmentForm";
 import { RemoveRegistrationButton } from "@/components/admin/RemoveRegistrationButton";
+import { RealtimeRefresher } from "@/components/admin/RealtimeRefresher";
 import Link from "next/link";
 
 export default async function AdminEventDetailPage({
@@ -75,6 +76,7 @@ export default async function AdminEventDetailPage({
 
   return (
     <div className={styles.page}>
+      <RealtimeRefresher intervalMs={3000} />
       <header className={styles.header}>
         <div className={styles.headerTop}>
           <div className={styles.headerTitle}>
