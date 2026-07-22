@@ -18,6 +18,7 @@ interface RegisterButtonProps {
   registrationStatus?: string | null;
   initialFormResponses?: Record<string, any>;
   userQrDataUrl?: string;
+  eventStatus?: "OPEN_FOR_REGISTRATION" | "ONGOING" | "COMPLETED";
 }
 
 export const RegisterButton = ({ 
@@ -31,7 +32,8 @@ export const RegisterButton = ({
   userEmail,
   registrationStatus,
   initialFormResponses = {},
-  userQrDataUrl
+  userQrDataUrl,
+  eventStatus
 }: RegisterButtonProps) => {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
@@ -73,7 +75,7 @@ export const RegisterButton = ({
           You&apos;re Registered
         </div>
         
-        {userQrDataUrl && (
+        {userQrDataUrl && registrationStatus !== "ATTENDED" && eventStatus !== "COMPLETED" && (
           <div className={styles.personalQrBlock}>
             <p className={styles.qrDesc}>Present this QR code at the venue</p>
             <div className={styles.qrImageWrapper}>

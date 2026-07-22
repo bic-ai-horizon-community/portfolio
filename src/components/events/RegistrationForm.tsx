@@ -108,10 +108,9 @@ export const RegistrationForm = ({ fields, onSubmit, loading, error, initialValu
         {onCancel && (
           <button 
             type="button" 
-            className="btn-secondary" 
+            className={`btn-secondary ${styles.cancelButton}`}
             onClick={onCancel}
             disabled={loading}
-            style={{ marginRight: '1rem', flex: 1 }}
           >
             Cancel
           </button>
@@ -120,7 +119,6 @@ export const RegistrationForm = ({ fields, onSubmit, loading, error, initialValu
           type="submit" 
           className={`btn-primary ${styles.submitButton}`} 
           disabled={loading}
-          style={{ flex: 2 }}
         >
           {loading ? 'Processing…' : buttonText}
         </button>

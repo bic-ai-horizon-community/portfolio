@@ -184,21 +184,20 @@ export default async function WorkshopDetailPage({ params }: { params: Promise<{
           {canShowSidebar && (
             <div className={`${styles.sideCard} glass-card`}>
               <h3>{isOngoing ? "Attendance" : "Enroll"}</h3>
-              {!isOngoing && (
-                  <RegisterButton
-                    id={id}
-                    type="workshop"
-                    isRegistered={isRegistered}
-                    registrationStatus={registration?.status || null}
-                    initialFormResponses={registration?.formResponses || {}}
-                    isOpen={workshop.status === "OPEN_FOR_REGISTRATION"}
-                    registrationType={(workshop as any).registrationType || "BUTTON"}
-                    formFields={((workshop as any).formFields as any[]) || []}
-                    audienceType={(workshop as any).audienceType || "BOTH"}
-                    userEmail={user?.email || ""}
-                    userQrDataUrl={userQrDataUrl || undefined}
-                  />
-              )}
+              <RegisterButton
+                id={id}
+                type="workshop"
+                isRegistered={isRegistered}
+                registrationStatus={registration?.status || null}
+                initialFormResponses={registration?.formResponses || {}}
+                isOpen={workshop.status === "OPEN_FOR_REGISTRATION"}
+                eventStatus={workshop.status}
+                registrationType={(workshop as any).registrationType || "BUTTON"}
+                formFields={((workshop as any).formFields as any[]) || []}
+                audienceType={(workshop as any).audienceType || "BOTH"}
+                userEmail={user?.email || ""}
+                userQrDataUrl={userQrDataUrl || undefined}
+              />
 
 
             </div>

@@ -182,26 +182,22 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <div className={`${styles.sideCard} glass-card`}>
               {/* Registration / Attendance section */}
               <h3>{isOngoing ? "Attendance" : "Register"}</h3>
-              {/* Only show register button if not ongoing */}
-              {!isOngoing && (
-                <>
-                  <RegisterButton
-                    id={id}
-                    type="event"
-                    isRegistered={isRegistered}
-                    registrationStatus={registration?.status || null}
-                    initialFormResponses={registration?.formResponses || {}}
-                    isOpen={event.status === "OPEN_FOR_REGISTRATION"}
-                    registrationType={event.registrationType as "BUTTON" | "FORM"}
-                    formFields={formFields}
-                    audienceType={event.audienceType as "COLLEGE_ONLY" | "PUBLIC_ONLY" | "BOTH"}
-                    userEmail={user?.email || ""}
-                    userQrDataUrl={userQrDataUrl || undefined}
-                  />
-                  {!isRegistered && (
-                    <p className={styles.sideNote}>Secure your spot for this event.</p>
-                  )}
-                </>
+              <RegisterButton
+                id={id}
+                type="event"
+                isRegistered={isRegistered}
+                registrationStatus={registration?.status || null}
+                initialFormResponses={registration?.formResponses || {}}
+                isOpen={event.status === "OPEN_FOR_REGISTRATION"}
+                eventStatus={event.status}
+                registrationType={event.registrationType as "BUTTON" | "FORM"}
+                formFields={formFields}
+                audienceType={event.audienceType as "COLLEGE_ONLY" | "PUBLIC_ONLY" | "BOTH"}
+                userEmail={user?.email || ""}
+                userQrDataUrl={userQrDataUrl || undefined}
+              />
+              {!isRegistered && !isOngoing && event.status !== "COMPLETED" && (
+                <p className={styles.sideNote}>Secure your spot for this event.</p>
               )}
 
 
