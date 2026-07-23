@@ -1,4 +1,7 @@
 export default {
+  build: {
+    minify: true,
+  },
   default: {
     override: {
       wrapper: "cloudflare-node",
