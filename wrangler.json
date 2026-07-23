@@ -6,6 +6,7 @@
     "nodejs_compat"
   ],
   "assets": {
-    "directory": "public"
-  }
+    "directory": ".vercel/output/static"
+  },
+  "main": ".vercel/output/functions/worker.func/index.js"
 }
