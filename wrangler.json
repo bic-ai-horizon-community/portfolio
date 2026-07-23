@@ -6,11 +6,5 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
-  },
-  "kv_namespaces": [
-    {
-      "binding": "NEXT_CACHE_WORKERS_KV",
-      "id": "mock_id"
-    }
-  ]
+  }
 }
