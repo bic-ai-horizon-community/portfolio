@@ -22,6 +22,7 @@ export default function EditWorkshopPage({ params }: { params: Promise<{ id: str
     externalLinks: [] as { label: string, url: string }[],
     audienceType: "BOTH" as "COLLEGE_ONLY" | "PUBLIC_ONLY" | "BOTH",
     registrationType: "BUTTON" as "BUTTON" | "FORM",
+    isDedicated: false,
     formFields: [] as { label: string; type: string; required: boolean; options?: string[] }[],
   });
   const [loading, setLoading] = useState(true);
@@ -54,6 +55,7 @@ export default function EditWorkshopPage({ params }: { params: Promise<{ id: str
           externalLinks: data.externalLinks || [],
           audienceType: data.audienceType || "BOTH",
           registrationType: data.registrationType || "BUTTON",
+          isDedicated: Boolean(data.isDedicated),
           formFields: data.formFields || [],
         });
       } catch (err: any) {
@@ -153,6 +155,7 @@ export default function EditWorkshopPage({ params }: { params: Promise<{ id: str
           externalLinks: formData.externalLinks.filter(l => l.label && l.url),
           audienceType: formData.audienceType,
           registrationType: formData.registrationType,
+          isDedicated: formData.isDedicated,
           formFields: formData.registrationType === 'FORM' ? formData.formFields : null,
         }),
       });
@@ -303,11 +306,31 @@ export default function EditWorkshopPage({ params }: { params: Promise<{ id: str
           onChange={(links) => setFormData({ ...formData, externalLinks: links })} 
         />
 
-        <div className={styles.field}>
-          <label>Audience Type</label>
+        <div className="glass-card" style={{ padding: '1.25rem', marginBottom: '1.5rem', borderLeft: '4px solid var(--accent, #6366f1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <label style={{ fontWeight: 'bold', fontSize: '1rem', display: 'block', marginBottom: '0.25rem' }}>
+                ⚡ Dedicated Registrations (External Site Sync)
+              </label>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
+                When enabled, registrations are managed on our dedicated site (`aihorizonregistration.workers.dev`). Data will automatically match by workshop title (case-sensitive) and backup to Supabase.
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              style={{ width: '1.5rem', height: '1.5rem', cursor: 'pointer' }}
+              checked={formData.isDedicated}
+              onChange={(e) => setFormData({ ...formData, isDedicated: e.target.checked })}
+            />
+          </div>
+        </div>
+
+        <div className={styles.field} style={formData.isDedicated ? { opacity: 0.35, pointerEvents: 'none' } : undefined}>
+          <label>Audience Type {formData.isDedicated && <span style={{ fontSize: '0.72rem', color: '#818cf8', marginLeft: '0.4rem' }}>disabled for dedicated</span>}</label>
           <select
             name="audienceType"
             value={formData.audienceType}
+            disabled={formData.isDedicated}
             onChange={handleChange}
           >
             <option value="BOTH">Everyone (College + Public)</option>
@@ -316,11 +339,12 @@ export default function EditWorkshopPage({ params }: { params: Promise<{ id: str
           </select>
         </div>
 
-        <div className={styles.field}>
-          <label>Registration Type</label>
+        <div className={styles.field} style={formData.isDedicated ? { opacity: 0.35, pointerEvents: 'none' } : undefined}>
+          <label>Registration Type {formData.isDedicated && <span style={{ fontSize: '0.72rem', color: '#818cf8', marginLeft: '0.4rem' }}>disabled for dedicated</span>}</label>
           <select
             name="registrationType"
             value={formData.registrationType}
+            disabled={formData.isDedicated}
             onChange={handleChange}
           >
             <option value="BUTTON">Single Button (One-Click Register)</option>
@@ -328,7 +352,7 @@ export default function EditWorkshopPage({ params }: { params: Promise<{ id: str
           </select>
         </div>
 
-        {formData.registrationType === "FORM" && (
+        {formData.registrationType === "FORM" && !formData.isDedicated && (
           <div className={styles.section}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <label style={{ fontWeight: 'bold' }}>Dynamic Form Builder</label>

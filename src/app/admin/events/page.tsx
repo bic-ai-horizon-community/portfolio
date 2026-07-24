@@ -70,7 +70,14 @@ export default async function AdminEventsPage({
           <tbody>
             {events.map((event) => (
               <tr key={event.id}>
-                <td className={styles.eventTitle}>{event.title}</td>
+                <td className={styles.eventTitle}>
+                  <span>{event.title}</span>
+                  {event.isDedicated && (
+                    <span style={{ marginLeft: '0.5rem', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '0.1rem 0.45rem', borderRadius: '9999px', fontSize: '0.68rem', fontWeight: 'bold' }}>
+                      ⚡ Dedicated
+                    </span>
+                  )}
+                </td>
                 <td>
                   <span className={styles.status} data-status={event.status}>
                     {event.status.replace(/_/g, " ")}

@@ -26,6 +26,16 @@ export async function PATCH(
       data: { status: status as EventStatus },
     });
 
+    if (workshop.isDedicated) {
+      const { syncDedicatedRegistrations } = await import("@/lib/firebase-sync");
+      syncDedicatedRegistrations({
+        targetId: workshop.id,
+        targetType: "workshop",
+        title: workshop.title,
+        organizedById: workshop.organizedById,
+      }).catch((err) => console.error("Background sync error:", err));
+    }
+
     return NextResponse.json(workshop);
   } catch (error) {
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });

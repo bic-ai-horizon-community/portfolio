@@ -5,8 +5,8 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 
 const eventUpdateSchema = z.object({
-  title: z.string().min(3).optional(),
-  description: z.string().min(10).optional(),
+  title: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
   status: z.enum(["OPEN_FOR_REGISTRATION", "ONGOING", "COMPLETED"]).optional(),
   eventType: z.enum(["ONE_DAY", "MULTIPLE_DAY"]).optional(),
   startDate: z.string().or(z.date()).optional().transform(val => val ? new Date(val) : undefined),
@@ -20,6 +20,7 @@ const eventUpdateSchema = z.object({
   })).optional(),
   audienceType: z.enum(["COLLEGE_ONLY", "PUBLIC_ONLY", "BOTH"]).optional(),
   registrationType: z.enum(["BUTTON", "FORM"]).optional(),
+  isDedicated: z.boolean().optional(),
   formFields: z.array(z.object({
     label: z.string(),
     type: z.enum(["text", "email", "phone", "textarea", "select", "checkbox", "number"]),
@@ -72,6 +73,16 @@ export async function PATCH(
       where: { id },
       data: validatedData,
     });
+
+    if (event.isDedicated) {
+      const { syncDedicatedRegistrations } = await import("@/lib/firebase-sync");
+      syncDedicatedRegistrations({
+        targetId: event.id,
+        targetType: "event",
+        title: event.title,
+        organizedById: event.organizedById,
+      }).catch((err) => console.error("Background sync error:", err));
+    }
 
     return NextResponse.json(event);
   } catch (error) {

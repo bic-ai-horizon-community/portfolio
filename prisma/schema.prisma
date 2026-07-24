@@ -90,6 +90,7 @@ model Event {
   formFields     Json?            // Array of { label, type, required, options? }
   showQr        Boolean     @default(true)
   qrVisibility  QrVisibility @default(PUBLIC)
+  isDedicated   Boolean     @default(false)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
@@ -120,6 +121,7 @@ model Workshop {
   formFields     Json?            // Array of { label, type, required, options? }
   showQr        Boolean     @default(true)
   qrVisibility  QrVisibility @default(PUBLIC)
+  isDedicated   Boolean     @default(false)
   status        EventStatus @default(OPEN_FOR_REGISTRATION)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

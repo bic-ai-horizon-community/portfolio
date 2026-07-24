@@ -5,7 +5,6 @@ import { redirect, notFound } from "next/navigation";
 import styles from "./AdminEventDetail.module.css";
 import { SearchInput } from "@/components/admin/SearchInput";
 import { StatusUpdater } from "@/components/admin/StatusUpdater";
-
 import { AttendanceMarker } from "@/components/admin/AttendanceMarker";
 import { MediaUpload } from "@/components/admin/MediaUpload";
 import { DeleteMediaButton } from "@/components/admin/DeleteMediaButton";
@@ -14,6 +13,7 @@ import { ManualEnrollmentForm } from "@/components/admin/ManualEnrollmentForm";
 import { RemoveRegistrationButton } from "@/components/admin/RemoveRegistrationButton";
 import { RealtimeRefresher } from "@/components/admin/RealtimeRefresher";
 import Link from "next/link";
+import { SyncDedicatedButton } from "@/components/admin/SyncDedicatedButton";
 
 export default async function AdminEventDetailPage({
   params,
@@ -23,13 +23,11 @@ export default async function AdminEventDetailPage({
   searchParams: Promise<{ users?: string }>;
 }) {
   const session = await getServerSession(authOptions);
-
-  if (!session || (session.user as any).role !== "ADMIN") {
-    redirect("/");
-  }
+  if (!session || (session.user as any).role !== "ADMIN") redirect("/");
 
   const { id } = await params;
   const userQuery = ((await searchParams).users || "").trim();
+
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
@@ -47,9 +45,7 @@ export default async function AdminEventDetailPage({
         include: { user: true },
         orderBy: { createdAt: "desc" },
       },
-      attendances: {
-        include: { user: true },
-      },
+      attendances: { include: { user: true } },
       media: true,
     },
   });
@@ -57,8 +53,6 @@ export default async function AdminEventDetailPage({
   if (!event) notFound();
 
   const attendeeIds = new Set(event.attendances.map((a) => a.userId));
-
-  // Build attendance timestamp lookup
   const attendanceTimestamps = new Map<string, Date>();
   for (const att of event.attendances) {
     attendanceTimestamps.set(att.userId, att.timestamp);
@@ -74,6 +68,17 @@ export default async function AdminEventDetailPage({
     FORM: "Custom Form",
   };
 
+  // ── Dedicated: collect all unique Firebase field keys (skip private _ keys)
+  const dedicatedFieldKeys: string[] = [];
+  if (event.isDedicated) {
+    const keySet = new Set<string>();
+    for (const reg of event.registrations) {
+      const r = reg.formResponses as Record<string, string> | null;
+      if (r) Object.keys(r).filter((k) => !k.startsWith("_")).forEach((k) => keySet.add(k));
+    }
+    dedicatedFieldKeys.push(...keySet);
+  }
+
   return (
     <div className={styles.page}>
       <RealtimeRefresher intervalMs={3000} />
@@ -81,26 +86,36 @@ export default async function AdminEventDetailPage({
         <div className={styles.headerTop}>
           <div className={styles.headerTitle}>
             <p className={styles.breadcrumb}>Admin / Events / {id.substring(0, 8)}</p>
-            <h1>{event.title}</h1>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+              <h1>{event.title}</h1>
+              {event.isDedicated && (
+                <span style={{ background: "rgba(99,102,241,0.15)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.3)", padding: "0.25rem 0.65rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: "bold" }}>
+                  ⚡ Dedicated Site Sync
+                </span>
+              )}
+            </div>
           </div>
           <div className={styles.primaryActions}>
-            <a
-              href={`/api/admin/events/${id}/export`}
-              className="btn-secondary"
-              style={{ padding: '0.5rem 1rem', textDecoration: 'none' }}
-              download
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem', display: 'inline-block' }}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {event.isDedicated && (
+              <>
+                <a href="https://aihorizonregistration.samipregmi123456.workers.dev/admin" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "0.5rem 1rem", textDecoration: "none" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: "0.5rem", display: "inline-block" }}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" /></svg>
+                  Registration Site
+                </a>
+                <SyncDedicatedButton id={id} type="event" />
+              </>
+            )}
+            <a href={`/api/admin/events/${id}/export`} className="btn-secondary" style={{ padding: "0.5rem 1rem", textDecoration: "none" }} download>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: "0.5rem", display: "inline-block" }}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Export Excel
             </a>
             <AdminDeleteButton id={id} type="event" />
-            <Link href={`/admin/events/edit/${id}`} className="btn-secondary" style={{ padding: '0.5rem 1rem' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem', display: 'inline-block' }}><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <Link href={`/admin/events/edit/${id}`} className="btn-secondary" style={{ padding: "0.5rem 1rem" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: "0.5rem", display: "inline-block" }}><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               Edit Event
             </Link>
           </div>
         </div>
-
         <div className={styles.utilityGrid}>
           <StatusUpdater id={id} type="event" currentStatus={event.status} />
         </div>
@@ -111,87 +126,177 @@ export default async function AdminEventDetailPage({
           <h3>Registrations</h3>
           <p>{event.registrations.length}</p>
         </div>
-        <div className={`${styles.statCard} glass-card`} style={{ color: 'var(--success)' }}>
+        <div className={`${styles.statCard} glass-card`} style={{ color: "var(--success)" }}>
           <h3>Attendees</h3>
           <p>{event.attendances.length}</p>
         </div>
         <div className={`${styles.statCard} glass-card`}>
           <h3>Audience</h3>
-          <p style={{ fontSize: '0.9rem' }}>{audienceLabels[event.audienceType] || 'Everyone'}</p>
+          <p style={{ fontSize: "0.9rem" }}>{audienceLabels[event.audienceType] || "Everyone"}</p>
         </div>
         <div className={`${styles.statCard} glass-card`}>
           <h3>Registration</h3>
-          <p style={{ fontSize: '0.9rem' }}>{regTypeLabels[event.registrationType] || 'Button'}</p>
+          <p style={{ fontSize: "0.9rem" }}>{regTypeLabels[event.registrationType] || "Button"}</p>
         </div>
       </div>
 
       <div className={styles.grid}>
         <div className={styles.main}>
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2>Registered Users</h2>
-            </div>
-            <div className={styles.sectionToolbar}>
-              <ManualEnrollmentForm eventId={id} />
-              <SearchInput placeholder="Search registered users..." queryKey="users" />
-            </div>
-            <div className={`${styles.tableWrapper} glass-card`}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>User</th>
-                    <th>User ID</th>
-                    <th>Status</th>
-                    <th>Attendance Time</th>
-                    <th>Mark Attendance</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {event.registrations.map((reg) => (
-                    <tr key={reg.id}>
-                      <td>
-                        <div className={styles.userName}>{reg.user.name}</div>
-                        <div className={styles.userEmail}>{reg.user.email}</div>
-                      </td>
-                      <td><code className={styles.nodeId}>{reg.userId.substring(0, 8)}</code></td>
-                      <td>
-                        {attendeeIds.has(reg.userId) ? (
-                          <span className={styles.attended}>ATTENDED</span>
-                        ) : (
-                          <span className={styles.registered}>REGISTERED</span>
-                        )}
-                      </td>
-                      <td>
-                        {attendanceTimestamps.has(reg.userId) ? (
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
-                            {new Date(attendanceTimestamps.get(reg.userId)!).toLocaleString('en-US', {
-                              month: 'short', day: 'numeric',
-                              hour: '2-digit', minute: '2-digit', second: '2-digit',
-                            })}
-                          </span>
-                        ) : (
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>—</span>
-                        )}
-                      </td>
-                      <td>
-                        <AttendanceMarker 
-                          eventId={id} 
-                          userId={reg.userId} 
-                          isAttended={attendeeIds.has(reg.userId)} 
-                          disabled={event.status !== "ONGOING"}
-                        />
-                      </td>
-                      <td>
-                        <RemoveRegistrationButton userId={reg.userId} eventId={id} />
-                      </td>
+
+          {/* ── DEDICATED: Read-only Firebase table ── */}
+          {event.isDedicated ? (
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <div>
+                  <h2>⚡ Dedicated Registrations</h2>
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                    Read-only · Synced from <strong>aihorizonregistration.samipregmi123456.workers.dev</strong>
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ overflowX: "auto" }} className="glass-card">
+                {event.registrations.length === 0 ? (
+                  <p className={styles.noData} style={{ padding: "2rem" }}>
+                    No registrations synced yet. Click &ldquo;Sync Dedicated Registrations&rdquo; in the header above.
+                  </p>
+                ) : (
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Status</th>
+                        {dedicatedFieldKeys.map((k) => (
+                          <th key={k} style={{ textTransform: "capitalize" }}>{k}</th>
+                        ))}
+                        <th>Registered At</th>
+                        <th>Attended At</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {event.registrations.map((reg, idx) => {
+                        const isPresent = attendeeIds.has(reg.userId);
+                        const responses = reg.formResponses as Record<string, string> | null;
+                        // Parse Firebase ms timestamps
+                        const rawRegisteredAt = responses?._registeredAt;
+                        const rawAttendedAt = responses?._attendedAt;
+                        const registeredAt = rawRegisteredAt
+                          ? new Date(Number(rawRegisteredAt)).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })
+                          : new Date(reg.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                        const attendedAt = rawAttendedAt
+                          ? new Date(Number(rawAttendedAt)).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })
+                          : (attendanceTimestamps.has(reg.userId)
+                            ? new Date(attendanceTimestamps.get(reg.userId)!).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })
+                            : null);
+                        return (
+                          <tr key={reg.id}>
+                            <td style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{idx + 1}</td>
+                            <td>
+                              {isPresent ? (
+                                <span style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem", background: "rgba(34,197,94,0.12)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.35)", padding: "0.2rem 0.55rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: "bold" }}>
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 13l4 4L19 7"/></svg>
+                                  Present
+                                </span>
+                              ) : (
+                                <span className={styles.registered}>REGISTERED</span>
+                              )}
+                            </td>
+                            {dedicatedFieldKeys.map((k) => (
+                              <td key={k} style={{ fontSize: "0.85rem", maxWidth: "220px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {responses?.[k] != null ? String(responses[k]) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                              </td>
+                            ))}
+                            <td style={{ fontSize: "0.8rem", color: "var(--text-sub)", whiteSpace: "nowrap" }}>
+                              {registeredAt}
+                            </td>
+                            <td style={{ fontSize: "0.8rem", whiteSpace: "nowrap" }}>
+                              {attendedAt ? (
+                                <span style={{ color: "#22c55e" }}>{attendedAt}</span>
+                              ) : (
+                                <span style={{ color: "var(--text-muted)" }}>—</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </section>
+          ) : (
+            /* ── STANDARD: Editable enrollment table ── */
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h2>Registered Users</h2>
+              </div>
+              <div className={styles.sectionToolbar}>
+                <ManualEnrollmentForm eventId={id} />
+                <SearchInput placeholder="Search registered users..." queryKey="users" />
+              </div>
+              <div className={`${styles.tableWrapper} glass-card`}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>User ID</th>
+                      <th>Status</th>
+                      <th>Attendance Time</th>
+                      <th>Mark Attendance</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              {event.registrations.length === 0 && <p className={styles.noData}>{userQuery ? "No matching users found." : "No users registered yet."}</p>}
-            </div>
-          </section>
+                  </thead>
+                  <tbody>
+                    {event.registrations.map((reg) => {
+                      const isPresent = attendeeIds.has(reg.userId);
+                      return (
+                        <tr key={reg.id}>
+                          <td>
+                            <div className={styles.userName}>{reg.user.name}</div>
+                            <div className={styles.userEmail}>{reg.user.email}</div>
+                          </td>
+                          <td><code className={styles.nodeId}>{reg.userId.substring(0, 8)}</code></td>
+                          <td>
+                            {isPresent ? (
+                              <span className={styles.attended}>ATTENDED</span>
+                            ) : (
+                              <span className={styles.registered}>REGISTERED</span>
+                            )}
+                          </td>
+                          <td>
+                            {attendanceTimestamps.has(reg.userId) ? (
+                              <span style={{ fontSize: "0.8rem", color: "var(--text-sub)" }}>
+                                {new Date(attendanceTimestamps.get(reg.userId)!).toLocaleString("en-US", {
+                                  month: "short", day: "numeric",
+                                  hour: "2-digit", minute: "2-digit", second: "2-digit",
+                                })}
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>—</span>
+                            )}
+                          </td>
+                          <td>
+                            <AttendanceMarker
+                              eventId={id}
+                              userId={reg.userId}
+                              isAttended={isPresent}
+                              disabled={event.status !== "ONGOING"}
+                            />
+                          </td>
+                          <td>
+                            <RemoveRegistrationButton userId={reg.userId} eventId={id} />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {event.registrations.length === 0 && (
+                  <p className={styles.noData}>{userQuery ? "No matching users found." : "No users registered yet."}</p>
+                )}
+              </div>
+            </section>
+          )}
         </div>
 
         <aside className={styles.sidebar}>
@@ -200,7 +305,7 @@ export default async function AdminEventDetailPage({
             <div className={`${styles.mediaSection} glass-card`}>
               <div className={styles.mediaGrid}>
                 {event.media.map((m) => (
-                  <div key={m.id} className={styles.mediaItem} style={{ position: 'relative' }}>
+                  <div key={m.id} className={styles.mediaItem} style={{ position: "relative" }}>
                     <DeleteMediaButton id={m.id} />
                     <img src={m.url} alt="Event Media" />
                   </div>

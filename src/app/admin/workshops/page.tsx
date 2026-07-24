@@ -72,7 +72,14 @@ export default async function AdminWorkshopsPage({
           <tbody>
             {workshops.map((workshop) => (
               <tr key={workshop.id}>
-                <td className={styles.titleCell}>{workshop.title}</td>
+                <td className={styles.titleCell}>
+                  <span>{workshop.title}</span>
+                  {workshop.isDedicated && (
+                    <span style={{ marginLeft: '0.5rem', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '0.1rem 0.45rem', borderRadius: '9999px', fontSize: '0.68rem', fontWeight: 'bold' }}>
+                      ⚡ Dedicated
+                    </span>
+                  )}
+                </td>
                 <td className={styles.dateCell}>
                   {workshop.schedule || workshop.startDate 
                     ? new Date(workshop.schedule || workshop.startDate!).toLocaleDateString() 
