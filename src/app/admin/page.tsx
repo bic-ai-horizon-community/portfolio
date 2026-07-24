@@ -65,7 +65,7 @@ export default async function AdminDashboard() {
             { href: "/admin/events", label: "Events", desc: "Create, edit, and manage all events" },
             { href: "/admin/workshops", label: "Workshops", desc: "Manage workshop schedules and enrollments" },
             { href: "/admin/users", label: "Users", desc: "View and manage user roles and accounts" },
-            { href: "https://aihorizonregistration.samipregmi123456.workers.dev/admin", label: "Registration Portal", desc: "Access the external Firebase registration site", external: true },
+            { href: `${process.env.NEXT_PUBLIC_REGISTRATION_URL || "https://aihorizonregistration.samipregmi123456.workers.dev"}/admin`, label: "Registration Portal", desc: "Access the external Firebase registration site", external: true },
           ].map((link) => (
             <Link key={link.href} href={link.href} target={link.external ? "_blank" : undefined} rel={link.external ? "noopener noreferrer" : undefined} className={`${styles.mgmtCard} glass-card`}>
               <div>
