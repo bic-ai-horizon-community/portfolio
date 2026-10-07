@@ -1,0 +1,209 @@
+.page {
+  padding: 3.5rem 0 2rem;
+}
+
+.header {
+  max-width: 720px;
+  margin-bottom: 3.5rem;
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--primary);
+  margin-bottom: 0.875rem;
+}
+
+.lead {
+  margin-top: 1.25rem;
+  color: var(--text-sub);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+/* Award card */
+.award {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--primary-glow);
+  border: 1px solid var(--border-focus);
+  color: var(--primary);
+}
+
+.awardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.awardYear {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+}
+
+.awardTitle {
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-main);
+}
+
+/* Facts list */
+.facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.125rem 2rem;
+  margin: 1.25rem 0 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.fact {
+  min-width: 0;
+}
+
+.fact dt {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 0.3125rem;
+}
+
+.fact dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
+}
+
+.factPrize {
+  color: var(--primary);
+}
+
+.awardCitation {
+  margin: 1.5rem 0 0;
+  color: var(--text-sub);
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  max-width: 68ch;
+}
+
+/* Photo gallery */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.photo {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.photoImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform var(--t-base);
+}
+
+.photo:hover .photoImg {
+  transform: scale(1.03);
+}
+
+/* Tablet and up */
+@media (min-width: 720px) {
+  .award {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: 2.5rem;
+  }
+
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 880px) {
+  .facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 719px) {
+  .page {
+    padding: 2.5rem 0 1.5rem;
+  }
+
+  .header {
+    margin-bottom: 2.5rem;
+  }
+
+  .award {
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .badge {
+    width: 56px;
+    height: 56px;
+  }
+
+  .gallery {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 719px) {
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 400px) {
+  .award {
+    padding: 1.25rem;
+  }
+
+  .badge {
+    width: 48px;
+    height: 48px;
+  }
+
+  .badge svg {
+    width: 28px;
+    height: 28px;
+  }
+}

@@ -104,6 +104,8 @@ export default function RootLayout({
                     <h4>Explore</h4>
                     <Link href="/events">Events</Link>
                     <Link href="/workshops">Workshops</Link>
+                    <Link href="/awards">Awards</Link>
+                    <Link href="/about">About</Link>
                   </div>
                   <div className="footer-col">
                     <h4>Community</h4>
