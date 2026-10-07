@@ -122,7 +122,6 @@ export default async function DashboardPage() {
           <div className={styles.list}>
             {registrations.map((reg) => {
               const isAttended = reg.status === "ATTENDED";
-              const isDedicated = (reg.event as any)?.isDedicated || (reg.workshop as any)?.isDedicated;
               const formResponses = reg.formResponses as Record<string, string> | null;
               const responseEntries = formResponses ? Object.entries(formResponses) : [];
 
@@ -139,14 +138,7 @@ export default async function DashboardPage() {
                     </div>
                     <div className={styles.itemInfo} style={{ flex: 1 }}>
                       <strong>{reg.event?.title || reg.workshop?.title}</strong>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        {reg.event ? "Event" : "Workshop"}
-                        {isDedicated && (
-                          <span style={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)', padding: '0.05rem 0.4rem', borderRadius: '9999px', fontSize: '0.65rem', fontWeight: 'bold' }}>
-                            ⚡ Dedicated
-                          </span>
-                        )}
-                      </span>
+                      <span>{reg.event ? "Event" : "Workshop"}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
                       {registrationQrCodes[reg.id] && (
@@ -170,7 +162,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Dynamic form responses (from Firebase or local form) */}
+                  {/* Dynamic form responses captured at registration time */}
                   {responseEntries.length > 0 && (
                     <div style={{ width: '100%', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.65rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem 1.5rem' }}>
                       {responseEntries.map(([key, value]) => (

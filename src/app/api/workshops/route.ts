@@ -24,7 +24,6 @@ const workshopSchema = z.object({
   })).optional(),
   audienceType: z.enum(["COLLEGE_ONLY", "PUBLIC_ONLY", "BOTH"]).optional(),
   registrationType: z.enum(["BUTTON", "FORM"]).optional(),
-  isDedicated: z.boolean().optional(),
   formFields: z.array(z.object({
     label: z.string(),
     type: z.enum(["text", "email", "phone", "textarea", "select", "checkbox", "number"]),
@@ -62,16 +61,6 @@ export async function POST(req: Request) {
     const workshop = await prisma.workshop.create({
       data: validatedData,
     });
-
-    if (workshop.isDedicated) {
-      const { syncDedicatedRegistrations } = await import("@/lib/firebase-sync");
-      syncDedicatedRegistrations({
-        targetId: workshop.id,
-        targetType: "workshop",
-        title: workshop.title,
-        organizedById: workshop.organizedById,
-      }).catch((err) => console.error("Background sync error:", err));
-    }
 
     return NextResponse.json(workshop, { status: 201 });
   } catch (error) {
